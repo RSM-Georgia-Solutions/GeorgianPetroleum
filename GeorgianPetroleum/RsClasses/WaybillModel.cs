@@ -236,14 +236,22 @@ namespace GeorgianPetroleum.RsClasses
             return elem;
         }
 
-        public void InsertIntoDatabase()
+        public void InsertOrUpdateIntoDatabase()
         {
 
             DiManager.Company.StartTransaction();
+            DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"SELECT Code FROM [@RSM_WBAR] WHERE U_ID = '{ID}'"));
+            string WBARCode  = DiManager.Recordset.Fields.Item("Code").Value.ToString();
             UserTable SWBITable = DiManager.Company.UserTables.Item("RSM_SWBI");
 
             foreach (var field in GOODS_LIST)
             {
+                DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"SELECT Code FROM [@RSM_SWBI] WHERE U_W_NAME = N'{field.W_NAME}'"));
+                if (!DiManager.Recordset.EoF)
+                {
+                    SWBITable.GetByKey(DiManager.Recordset.Fields.Item("Code").Value.ToString());
+                }
+
                 SWBITable.UserFields.Fields.Item("U_" + nameof(field.AMOUNT)).Value = field.AMOUNT ?? "";
                 SWBITable.UserFields.Fields.Item("U_" + nameof(field.UNIT_TXT)).Value = field.UNIT_TXT ?? "";
                 SWBITable.UserFields.Fields.Item("U_" + nameof(field.A_ID)).Value = field.A_ID ?? "";
@@ -258,15 +266,33 @@ namespace GeorgianPetroleum.RsClasses
                 SWBITable.UserFields.Fields.Item("U_" + nameof(field.W_NAME)).Value = field.W_NAME ?? "";
                 SWBITable.UserFields.Fields.Item("U_" + nameof(WAYBILL_NUMBER)).Value = WAYBILL_NUMBER ?? "";
                 SWBITable.UserFields.Fields.Item("U_WB_CODE").Value = ID ?? "";
-                int Ret = SWBITable.Add();
-                if (Ret != 0)
+
+                if (DiManager.Recordset.EoF)
                 {
-                    SAPbouiCOM.Framework.Application.SBO_Application.SetStatusBarMessage("Error : " + DiManager.Company.GetLastErrorDescription(), SAPbouiCOM.BoMessageTime.bmt_Short);
-                    return;
+                    int Ret = SWBITable.Add();
+                    if (Ret != 0)
+                    {
+                        SAPbouiCOM.Framework.Application.SBO_Application.SetStatusBarMessage("Error : " + DiManager.Company.GetLastErrorDescription(), SAPbouiCOM.BoMessageTime.bmt_Short);
+                        return;
+                    }
+                }
+                else
+                {
+                    int Ret = SWBITable.Update();
+                    if (Ret != 0)
+                    {
+                        SAPbouiCOM.Framework.Application.SBO_Application.SetStatusBarMessage("Error : " + DiManager.Company.GetLastErrorDescription(), SAPbouiCOM.BoMessageTime.bmt_Short);
+                        return;
+                    }
                 }
             }
 
             UserTable WBARTable = DiManager.Company.UserTables.Item("RSM_WBAR");
+            if (!string.IsNullOrWhiteSpace(WBARCode))
+            {
+                WBARTable.GetByKey(WBARCode);
+            }
+            WBARCode = string.Empty;
             WBARTable.UserFields.Fields.Item("U_" + nameof(ACTIVATE_DATE)).Value = ACTIVATE_DATE ?? "";
             WBARTable.UserFields.Fields.Item("U_" + nameof(BEGIN_DATE)).Value = BEGIN_DATE ?? "";
             WBARTable.UserFields.Fields.Item("U_" + nameof(BUYER_NAME)).Value = BUYER_NAME ?? "";
@@ -309,14 +335,26 @@ namespace GeorgianPetroleum.RsClasses
             // WBARTable.UserFields.Fields.Item("U_" + nameof(IS_CORRECTED)).Value = IS_CORRECTED ?? "";
             WBARTable.Name = Name ?? "";
 
-
-            int Ret1 = WBARTable.Add();
-            if (Ret1 != 0 && Ret1 != -2035)
+            if (DiManager.Recordset.EoF)
             {
-                SAPbouiCOM.Framework.Application.SBO_Application.SetStatusBarMessage("Error : " + DiManager.Company.GetLastErrorDescription(), SAPbouiCOM.BoMessageTime.bmt_Short);
-                return;
+                int Ret1 = WBARTable.Add();
+                if (Ret1 != 0 && Ret1 != -2035)
+                {
+                    SAPbouiCOM.Framework.Application.SBO_Application.SetStatusBarMessage(
+                        "Error : " + DiManager.Company.GetLastErrorDescription(), SAPbouiCOM.BoMessageTime.bmt_Short);
+                    return;
+                }
             }
-
+            else
+            {
+                int Ret1 = WBARTable.Update();
+                if (Ret1 != 0 && Ret1 != -2035)
+                {
+                    SAPbouiCOM.Framework.Application.SBO_Application.SetStatusBarMessage(
+                        "Error : " + DiManager.Company.GetLastErrorDescription(), SAPbouiCOM.BoMessageTime.bmt_Short);
+                    return;
+                }
+            }
             DiManager.Company.EndTransaction(BoWfTransOpt.wf_Commit);
         }
     }

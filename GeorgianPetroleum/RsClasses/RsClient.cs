@@ -91,8 +91,8 @@ namespace GeorgianPetroleum
 
             foreach (var wbId in waybillIds)
             {
-                var model = GetWaybillModelFromXml(wbId);
-                model.InsertIntoDatabase();
+                var model = GetWaybillModelFromId(wbId);
+                model.InsertOrUpdateIntoDatabase();
                 try
                 {
                     if (progressBar != null) progressBar.Value += 1;
@@ -107,7 +107,7 @@ namespace GeorgianPetroleum
 
        
 
-        public  WaybillModel GetWaybillModelFromXml(string wbId)
+        public  WaybillModel GetWaybillModelFromId(string wbId)
         {
             XElement sentWaybillsXml = GetWaybill(wbId);
             IEnumerable<XElement> elements = sentWaybillsXml.Elements();
@@ -187,6 +187,11 @@ namespace GeorgianPetroleum
             return wayBilsRequests;
 
 
+        }
+
+        internal XElement SaveWaybill(XElement modelToXml)
+        {
+            return _client.save_waybill(ServiceUser, ServiceUserPassword, modelToXml);
         }
 
         public XElement GetErrorCodes()

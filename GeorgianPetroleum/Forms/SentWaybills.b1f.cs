@@ -82,8 +82,9 @@ namespace GeorgianPetroleum.Forms
             if (pVal.ColUID != "ანგარიშ-ფაქტურის ნომერი")
             {
                var clickedWb = Grid0.DataTable.GetValue("ზედნადების ID", pVal.Row).ToString();
-                var model = DiManager.RsClient.GetWaybillModelFromXml(clickedWb);
-                SentWaybill waybill = new SentWaybill(clickedWb);
+                var model = DiManager.RsClient.GetWaybillModelFromId(clickedWb);
+                model.InsertOrUpdateIntoDatabase();
+                SentWaybill waybill = new SentWaybill(model);
                 waybill.Show();
             }
         }
