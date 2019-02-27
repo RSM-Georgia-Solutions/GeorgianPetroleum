@@ -1,0 +1,10 @@
+D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\GeorgianPetroleum.exe.config
+D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\GeorgianPetroleum.exe
+D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\GeorgianPetroleum.pdb
+D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\Antlr3.Runtime.dll
+D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\ConverterLib_x64.dll
+D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\Microsoft.QualityTools.Testing.Fakes.dll
+D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\SAPBusinessOneSDK.dll
+D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\obj\Debug\GeorgianPetroleum.exe
+D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\obj\Debug\GeorgianPetroleum.pdb
+D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\obj\Debug\GeorgianPetroleum.csprojResolveAssemblyReference.cache
