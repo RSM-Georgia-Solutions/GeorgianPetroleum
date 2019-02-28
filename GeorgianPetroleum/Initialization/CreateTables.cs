@@ -17,7 +17,11 @@ namespace GeorgianPetroleum.Initialization
             if (diManager.CreateTable("RSM_USRS", BoUTBTableType.bott_NoObjectAutoIncrement) &&
                 diManager.CreateTable("RSM_CPRM", BoUTBTableType.bott_NoObjectAutoIncrement) &&
                 diManager.CreateTable("RSM_SWBI", BoUTBTableType.bott_NoObjectAutoIncrement) &&
-                diManager.CreateTable("RSM_WBAR", BoUTBTableType.bott_NoObjectAutoIncrement)) 
+                diManager.CreateTable("RSM_WBAR", BoUTBTableType.bott_NoObjectAutoIncrement) &&
+                diManager.CreateTable("RSM_UOMS", BoUTBTableType.bott_NoObjectAutoIncrement) &&
+                diManager.CreateTable("RSM_MTCH", BoUTBTableType.bott_NoObjectAutoIncrement) &&
+                diManager.CreateTable("RSM_PRCE", BoUTBTableType.bott_NoObjectAutoIncrement) 
+                ) 
             {
                 Application.SBO_Application.SetStatusBarMessage("ცხირლები წარმატებით შეიქმნა",
                     BoMessageTime.bmt_Short, false);

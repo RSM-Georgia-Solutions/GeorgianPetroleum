@@ -64,11 +64,29 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DiManager.cs" />
+    <Compile Include="Forms\GrossProffitMargin.b1f.cs">
+      <DependentUpon>GrossProffitMargin.b1f</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Invoice.b1f.cs">
+      <DependentUpon>Invoice.b1f</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ItemsList.b1f.cs">
+      <DependentUpon>ItemsList.b1f</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MatchingTable.b1f.cs">
+      <DependentUpon>MatchingTable.b1f</DependentUpon>
+    </Compile>
     <Compile Include="Forms\SentWaybill.b1f.cs">
       <DependentUpon>SentWaybill.b1f</DependentUpon>
     </Compile>
     <Compile Include="Forms\SentWaybills.b1f.cs">
       <DependentUpon>SentWaybills.b1f</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\UomList.b1f.cs">
+      <DependentUpon>UomList.b1f</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\UomMatching.b1f.cs">
+      <DependentUpon>UomMatching.b1f</DependentUpon>
     </Compile>
     <Compile Include="Initialization\AddKeys.cs" />
     <Compile Include="Initialization\CreateFields.cs" />
@@ -84,6 +102,21 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <None Include="app.config" />
+    <None Include="Forms\GrossProffitMargin.b1f">
+      <FormCategory>UserForm</FormCategory>
+    </None>
+    <None Include="Forms\Invoice.b1f">
+      <FormCategory>SystemForm</FormCategory>
+    </None>
+    <None Include="Forms\Invoice.b1f__orig_srf">
+      <DependentUpon>Invoice.b1f</DependentUpon>
+    </None>
+    <None Include="Forms\ItemsList.b1f">
+      <FormCategory>UserForm</FormCategory>
+    </None>
+    <None Include="Forms\MatchingTable.b1f">
+      <FormCategory>UserForm</FormCategory>
+    </None>
     <None Include="Forms\SentWaybill.b1f">
       <FormCategory>UserForm</FormCategory>
     </None>
@@ -99,6 +132,12 @@
     <Compile Include="Program.cs" />
     <Compile Include="Menu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="Forms\UomList.b1f">
+      <FormCategory>UserForm</FormCategory>
+    </None>
+    <None Include="Forms\UomMatching.b1f">
+      <FormCategory>UserForm</FormCategory>
+    </None>
     <None Include="Properties\DataSources\System.Xml.Linq.XElement.datasource" />
     <None Include="Service References\RS.GE\GeorgianPetroleum.RS.GE.chek_service_userResponse.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>

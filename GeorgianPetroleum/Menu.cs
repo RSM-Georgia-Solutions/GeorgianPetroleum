@@ -17,6 +17,8 @@ namespace GeorgianPetroleum
 
             SAPbouiCOM.MenuCreationParams oCreationPackage = null;
             oCreationPackage = ((SAPbouiCOM.MenuCreationParams)(Application.SBO_Application.CreateObject(SAPbouiCOM.BoCreatableObjectType.cot_MenuCreationParams)));
+
+
             oMenuItem = Application.SBO_Application.Menus.Item("43520"); // moudles'
 
             oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_POPUP;
@@ -41,6 +43,17 @@ namespace GeorgianPetroleum
             {
                 oMenuItem = Application.SBO_Application.Menus.Item("GeorgianPetroleum");
                 oMenus = oMenuItem.SubMenus;
+
+                oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
+                oCreationPackage.UniqueID = "GeorgianPetroleum.Forms.GrossProffitMargin";
+                oCreationPackage.String = "ფასები";
+                oMenus.AddEx(oCreationPackage);
+
+                // Create s sub menu
+                oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
+                oCreationPackage.UniqueID = "GeorgianPetroleum.Forms.UomMatching";
+                oCreationPackage.String = "საზომი ერთეულები";
+                oMenus.AddEx(oCreationPackage);
 
                 // Create s sub menu
                 oCreationPackage.Type = SAPbouiCOM.BoMenuType.mt_STRING;
@@ -77,6 +90,16 @@ namespace GeorgianPetroleum
                 else if (pVal.BeforeAction && pVal.MenuUID == "GeorgianPetroleum.SentWaybill")
                 {
                     SentWaybills activeForm = new SentWaybills();
+                    activeForm.Show();
+                }
+                else if (pVal.BeforeAction && pVal.MenuUID == "GeorgianPetroleum.Forms.UomMatching")
+                {
+                    UomMatching activeForm = new UomMatching();
+                    activeForm.Show();
+                }
+                else if (pVal.BeforeAction && pVal.MenuUID == "GeorgianPetroleum.Forms.GrossProffitMargin")
+                {
+                    GrossProffitMargin activeForm = new GrossProffitMargin();
                     activeForm.Show();
                 }
             }

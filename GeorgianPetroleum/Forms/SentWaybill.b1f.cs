@@ -6,6 +6,7 @@ using GeorgianPetroleum.RsClasses;
 using SAPbouiCOM.Framework;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using SAPbobsCOM;
 using SAPbouiCOM;
 using Application = SAPbouiCOM.Framework.Application;
 
@@ -47,8 +48,11 @@ namespace GeorgianPetroleum.Forms
             this.Button0 = ((SAPbouiCOM.Button)(this.GetItem("Item_29").Specific));
             this.Button0.PressedAfter += new SAPbouiCOM._IButtonEvents_PressedAfterEventHandler(this.Button0_PressedAfter);
             this.EditText14 = ((SAPbouiCOM.EditText)(this.GetItem("Item_33").Specific));
-
             this.StaticText0 = ((SAPbouiCOM.StaticText)(this.GetItem("Item_39").Specific));
+            this.Button1 = ((SAPbouiCOM.Button)(this.GetItem("Item_40").Specific));
+            this.Button1.PressedAfter += new SAPbouiCOM._IButtonEvents_PressedAfterEventHandler(this.Button1_PressedAfter);
+            this.Button2 = ((SAPbouiCOM.Button)(this.GetItem("Item_41").Specific));
+            this.Button2.PressedAfter += new SAPbouiCOM._IButtonEvents_PressedAfterEventHandler(this.Button2_PressedAfter);
             this.OnCustomInitialize();
 
         }
@@ -157,11 +161,23 @@ namespace GeorgianPetroleum.Forms
             }
         }
 
+        private string buyerCode;
+        List<string> itemCodes = new List<string>();
+
         private void Form_VisibleAfter(SAPbouiCOM.SBOItemEventArg pVal)
         {
             if (SAPbouiCOM.Framework.Application.SBO_Application.Forms.ActiveForm.Title == "გაგზავნილი ზედნადები")
             {
                 FillFormFromModel();
+                string buyerTin = EditText1.Value;
+                string query = $"SELECT CardCode FROM OCRD WHERE OCRD.VatIdUnCmp = '{buyerTin}'";
+                DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte(query));
+                buyerCode = DiManager.Recordset.Fields.Item("CardCode").Value.ToString();
+                itemCodes = new List<string>();
+                for (int i = 0; i < Grid0.DataTable.Rows.Count; i++)
+                {
+                    itemCodes.Add(Grid0.DataTable.GetValue("საქონლის დასახელება", i).ToString());
+                }
             }
         }
 
@@ -210,6 +226,7 @@ namespace GeorgianPetroleum.Forms
 
 
 
+
         private void Button0_PressedAfter(object sboObject, SAPbouiCOM.SBOItemEventArg pVal)
         {
             FillModelFromForm();
@@ -217,7 +234,92 @@ namespace GeorgianPetroleum.Forms
 
         private SAPbouiCOM.EditText EditText14;
         private SAPbouiCOM.StaticText StaticText0;
+        private Button Button1;
+        private Dictionary<string, string> rs_sap_items = new Dictionary<string, string>();
 
+        private void Button1_PressedAfter(object sboObject, SBOItemEventArg pVal)
+        {
+            rs_sap_items = new Dictionary<string, string>();
+            int clicked = SAPbouiCOM.Framework.Application.SBO_Application.MessageBox("ნამდვილად გსურთ ინვოის(ებ)-ის გამოწერა?", 1, "დიახ", "არა");
+            if (clicked == 2)
+            {
+                return;
+            }
 
+            string itemCodesx = itemCodes.Aggregate(string.Empty, (current, item) => current + $"N'{item}', ");
+            itemCodesx = itemCodesx.Remove(itemCodesx.Length - 2, 2);
+
+            string queryForMatched = $"Select  U_RS_ITEM_ID as [RS-ის საქონელი], U_SAP_ITEM_ID as [Sap-ის საქონელი] from [@RSM_MTCH] WHERE U_BP_ID = '{buyerCode}' And U_RS_ITEM_ID in ({itemCodesx})";
+
+            DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte(queryForMatched));
+            while (!DiManager.Recordset.EoF)
+            {
+                var rsItemId = DiManager.Recordset.Fields.Item("RS-ის საქონელი").Value.ToString();
+                var sapItemId = DiManager.Recordset.Fields.Item("Sap-ის საქონელი").Value.ToString();
+                rs_sap_items.Add(rsItemId,sapItemId);
+                DiManager.Recordset.MoveNext();
+            }
+
+            if (DiManager.Recordset.RecordCount != Grid0.DataTable.Rows.Count)
+            {
+                Application.SBO_Application.SetStatusBarMessage("საქონელზე შეასაბამისობა არ არის გაკეთებული",
+                    BoMessageTime.bmt_Short, true);
+                return;
+            }
+
+            CreateArInvoiceFromWbModel(_waybillModel);
+
+        }
+
+        private int CreateArInvoiceFromWbModel(WaybillModel waybillModel)
+        {
+            Application.SBO_Application.ActivateMenuItem("2053");
+            Form invoice = SAPbouiCOM.Framework.Application.SBO_Application.Forms.ActiveForm;
+            Matrix invoiceMatrix = (Matrix)Application.SBO_Application.Forms.ActiveForm.Items.Item("38").Specific;
+            ((EditText)(invoice.Items.Item("4").Specific)).Value = buyerCode;
+            try
+            {
+                ((ComboBox)(invoice.Items.Item("63").Specific)).Select("USD");
+            }
+            catch (Exception)
+            {
+                ((ComboBox)(invoice.Items.Item("63").Specific)).Select("$");
+            }
+
+            int rowIndex = 1;
+            foreach (var item in waybillModel.GOODS_LIST)
+            {
+                SAPbouiCOM.EditText ItemCode = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("1").Cells.Item(rowIndex).Specific;
+                ItemCode.Value = rs_sap_items[item.W_NAME];
+                SAPbouiCOM.EditText Quantity = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("11").Cells.Item(rowIndex).Specific;
+                Quantity.Value = item.QUANTITY;
+                SAPbouiCOM.EditText unitCode = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("1470002145").Cells.Item(rowIndex).Specific;
+                DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"SELECT * FROM [@RSM_UOMS] WHERE U_ID = {item.UNIT_ID}"));
+                if (DiManager.Recordset.EoF)
+                {
+                    Application.SBO_Application.SetStatusBarMessage("საზომი ერთეულების შესაბამისობა არაა გაკეთებული",
+                        BoMessageTime.bmt_Short, true);
+                    return 0;
+                }
+                unitCode.Value = DiManager.Recordset.Fields.Item("U_UOM_SAP").Value.ToString();
+                //invoiceMatrix.AddRow();
+                rowIndex++;
+            } 
+
+            return 0;
+        }
+
+        private Button Button2;
+
+        private void Button2_PressedAfter(object sboObject, SBOItemEventArg pVal)
+        {
+            if (string.IsNullOrWhiteSpace(buyerCode))
+            {
+                Application.SBO_Application.SetStatusBarMessage("ამ საიდენტიფიკაციო კოდიტ ბიზნეს პარტნიორი ვერ მოიძებნა",
+                    BoMessageTime.bmt_Short, true);
+            }
+            MatchingTable matchingTable = new MatchingTable(buyerCode, itemCodes, _waybillModel.ID);
+            matchingTable.Show();
+        }
     }
 }

@@ -12,6 +12,7 @@ using GeorgianPetroleum.RS.GE;
 using GeorgianPetroleum.RsClasses;
 using SAPbouiCOM.Framework;
 using SAPbouiCOM;
+using Application = SAPbouiCOM.Framework.Application;
 
 namespace GeorgianPetroleum
 {
@@ -43,12 +44,19 @@ namespace GeorgianPetroleum
         {
             int unId = 0;
             int serviceUserId = 0;
-            var authenticated = _client.chek_service_user(ServiceUser, ServiceUserPassword, out unId, out serviceUserId);
-            if (!authenticated)
+            var authenticated = false;
+            try
             {
-                return false;
+                authenticated = _client.chek_service_user(ServiceUser, ServiceUserPassword, out unId,
+                    out serviceUserId);
             }
-            return true;
+            catch (Exception)
+            {
+                Application.SBO_Application.SetStatusBarMessage("ვერ ხერხდება RS-თან დაკავშირება",
+                    BoMessageTime.bmt_Short, true);
+            }
+
+            return authenticated;
         }
 
         public void GetWaybills(WayBilsRequest req)

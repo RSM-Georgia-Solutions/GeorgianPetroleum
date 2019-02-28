@@ -80,7 +80,25 @@ namespace GeorgianPetroleum.Initialization
                  diManager.AddField("RSM_WBAR", "TRANSPORTER_TIN", "TRANSPORTER_TIN", SAPbobsCOM.BoFieldTypes.db_Alpha, 200, false) &&
                  diManager.AddField("RSM_WBAR", "CUST_STATUS", "CUST_STATUS", SAPbobsCOM.BoFieldTypes.db_Alpha, 200, false) &&
                  diManager.AddField("RSM_WBAR", "CUST_NAME", "CUST_NAME", SAPbobsCOM.BoFieldTypes.db_Alpha, 200, false) &&
-                 diManager.AddField("RSM_WBAR", "INVOICE_DOCENTRY", "INVOICE_DOCENTRY", SAPbobsCOM.BoFieldTypes.db_Numeric, 10, false)
+                 diManager.AddField("RSM_WBAR", "INVOICE_DOCENTRY", "INVOICE_DOCENTRY", SAPbobsCOM.BoFieldTypes.db_Numeric, 10, false) &&
+
+                 diManager.AddField("RSM_UOMS", "UOM_SAP", "UOM SAP", SAPbobsCOM.BoFieldTypes.db_Alpha, 250, false) &&
+                 diManager.AddField("RSM_UOMS", "UOM_RS", "UOM RS", SAPbobsCOM.BoFieldTypes.db_Alpha, 250, false) &&
+                 diManager.AddField("RSM_UOMS", "ID", "OUM RS ID", SAPbobsCOM.BoFieldTypes.db_Alpha, 250, false) &&
+
+
+                 diManager.AddField("RSM_MTCH", "BP_ID", "Business Partner ID", SAPbobsCOM.BoFieldTypes.db_Alpha, 250, false) &&
+                 diManager.AddField("RSM_MTCH", "RS_ITEM_ID", "RS Item ID", SAPbobsCOM.BoFieldTypes.db_Alpha, 250, false) &&
+                 diManager.AddField("RSM_MTCH", "SAP_ITEM_ID", "SAP Item ID", SAPbobsCOM.BoFieldTypes.db_Alpha, 250, false) &&
+
+
+                 diManager.AddField("RSM_PRCE", "S_DATE", "Starting Date", SAPbobsCOM.BoFieldTypes.db_Date, 250, false) &&
+                 diManager.AddField("RSM_PRCE", "E_DATE", "Ending Date", SAPbobsCOM.BoFieldTypes.db_Date, 250, false) &&
+                 diManager.AddField("RSM_PRCE", "ABS_NUMBER", "Agreement Number", SAPbobsCOM.BoFieldTypes.db_Alpha, 250, false) &&
+                 diManager.AddField("RSM_PRCE", "PROFIT_MARGIN", "Profit Margin", SAPbobsCOM.BoFieldTypes.db_Float, 250, false) &&
+                 diManager.AddField("RSM_PRCE", "AVG_PRICE", "Avarage Price", SAPbobsCOM.BoFieldTypes.db_Float, 250, false) &&
+                 diManager.AddField("RSM_PRCE", "FreeText", "Free Text", SAPbobsCOM.BoFieldTypes.db_Alpha, 250, false)
+
 
                 )
             {

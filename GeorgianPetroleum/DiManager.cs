@@ -141,7 +141,7 @@ namespace GeorgianPetroleum
                 {
                     var x = Company.GetLastErrorDescription();
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(oUfield);
-                    oUfield = null;
+                  
                     GC.Collect();
                     return true;
                 }
@@ -149,7 +149,7 @@ namespace GeorgianPetroleum
                 {
                     var x = Company.GetLastErrorDescription();
                     System.Runtime.InteropServices.Marshal.ReleaseComObject(oUfield);
-                    oUfield = null;
+                  
                     GC.Collect();
                     return false;
                 }
@@ -157,21 +157,21 @@ namespace GeorgianPetroleum
             }
             catch (Exception)
             {
-                oUfield = null;
+           
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(oUfield);
                 GC.Collect();
                 return false;
             }
             finally
             {
-                oUfield = null;
+               
                 System.Runtime.InteropServices.Marshal.ReleaseComObject(oUfield);
                 GC.Collect();
             }
 
         }
 
-        public bool AddKey(string tablename, string keyname, string fieldAlias, BoYesNoEnum IsUnique, string secondKeyAlias = "")
+        public bool AddKey(string tablename, string keyname, string fieldAlias, BoYesNoEnum IsUnique, string secondKeyAlias = "", string thirdKeyAlias = "")
         {
             int result;
             UserKeysMD oUkey = (UserKeysMD)Company.GetBusinessObject(BoObjectTypes.oUserKeys);
@@ -185,7 +185,12 @@ namespace GeorgianPetroleum
                 oUkey.Elements.Add();
                 if (secondKeyAlias != "")
                 {
-                    oUkey.Elements.ColumnAlias = secondKeyAlias;
+                    oUkey.Elements.ColumnAlias = secondKeyAlias; 
+                }
+                if (thirdKeyAlias != "")
+                {
+                    oUkey.Elements.Add();
+                    oUkey.Elements.ColumnAlias = thirdKeyAlias;
                 }
                 result = oUkey.Add();
 
