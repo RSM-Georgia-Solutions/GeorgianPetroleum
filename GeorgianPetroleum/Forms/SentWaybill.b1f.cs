@@ -229,7 +229,7 @@ namespace GeorgianPetroleum.Forms
 
         private void Button0_PressedAfter(object sboObject, SAPbouiCOM.SBOItemEventArg pVal)
         {
-            FillModelFromForm();
+           // FillModelFromForm();
         }
 
         private SAPbouiCOM.EditText EditText14;
@@ -275,8 +275,16 @@ namespace GeorgianPetroleum.Forms
         {
             Application.SBO_Application.ActivateMenuItem("2053");
             Form invoice = SAPbouiCOM.Framework.Application.SBO_Application.Forms.ActiveForm;
-            Matrix invoiceMatrix = (Matrix)Application.SBO_Application.Forms.ActiveForm.Items.Item("38").Specific;
+            Matrix invoiceMatrix = (Matrix)invoice.Items.Item("38").Specific;
+            SAPbouiCOM.EditText postingDate = (EditText)invoice.Items.Item("10").Specific;
+            postingDate.Value = DateTime.Parse(waybillModel.ACTIVATE_DATE).ToString("yyyyMMdd");
             ((EditText)(invoice.Items.Item("4").Specific)).Value = buyerCode;
+            ((EditText)(invoice.Items.Item("4").Specific)).Value = buyerCode;
+            ((EditText)(invoice.Items.Item("U_WbNumber").Specific)).Value = _waybillModel.WAYBILL_NUMBER;
+
+            invoice.DataSources.UserDataSources.Item("wbid").Value = _waybillModel.ID;
+             
+ 
             try
             {
                 ((ComboBox)(invoice.Items.Item("63").Specific)).Select("USD");
@@ -293,6 +301,7 @@ namespace GeorgianPetroleum.Forms
                 ItemCode.Value = rs_sap_items[item.W_NAME];
                 SAPbouiCOM.EditText Quantity = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("11").Cells.Item(rowIndex).Specific;
                 Quantity.Value = item.QUANTITY;
+
                 SAPbouiCOM.EditText unitCode = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("1470002145").Cells.Item(rowIndex).Specific;
                 DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"SELECT * FROM [@RSM_UOMS] WHERE U_ID = {item.UNIT_ID}"));
                 if (DiManager.Recordset.EoF)

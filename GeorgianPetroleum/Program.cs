@@ -22,25 +22,33 @@ namespace GeorgianPetroleum
                 MyMenu.AddMenuItems();
                 Initial initial = new Initial();
                 DiManager diManager = new DiManager();
-
                 var recordset = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
-                recordset.DoQuery("SELECT * FROM [@RSM_CPRM]");
-                if (!recordset.EoF)
+                try
                 {
-                    DiManager.RsUserName = recordset.Fields.Item("U_username").Value.ToString();
-                    DiManager.RsUserPass = recordset.Fields.Item("U_password").Value.ToString();
+                    recordset.DoQuery("SELECT * FROM [@RSM_CPRM]");
+                    if (!recordset.EoF)
+                    {
+                        DiManager.RsUserName = recordset.Fields.Item("U_username").Value.ToString();
+                        DiManager.RsUserPass = recordset.Fields.Item("U_password").Value.ToString();
+                    }
+                    recordset.DoQuery($"SELECT * FROM [@RSM_USRS] WHERE U_USERID = '{DiManager.Company.UserName}'");
+                    if (!recordset.EoF)
+                    {
+                        DiManager.RsServiceUser = recordset.Fields.Item("U_RS_USER_NAME").Value.ToString();
+                        DiManager.RsServiceUserPass = recordset.Fields.Item("U_RS_PASSWORD").Value.ToString();
+                    }
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(recordset);
+                    recordset = null;
+                    GC.Collect();
                 }
-                recordset.DoQuery($"SELECT * FROM [@RSM_USRS] WHERE U_USERID = '{DiManager.Company.UserName}'");
-                if (!recordset.EoF)
+                catch (Exception)
                 {
-                    DiManager.RsServiceUser = recordset.Fields.Item("U_RS_USER_NAME").Value.ToString();
-                    DiManager.RsServiceUserPass = recordset.Fields.Item("U_RS_PASSWORD").Value.ToString();
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(recordset);
+                    recordset = null;
+                    GC.Collect();
                 }
-                System.Runtime.InteropServices.Marshal.ReleaseComObject(recordset);
-                recordset = null;
-                GC.Collect();
 
-                initial.Run(diManager);
+                //initial.Run(diManager);
                 oApp.RegisterMenuEventHandler(MyMenu.SBO_Application_MenuEvent);
                 Application.SBO_Application.AppEvent += new SAPbouiCOM._IApplicationEvents_AppEventEventHandler(SBO_Application_AppEvent);
                 oApp.Run();

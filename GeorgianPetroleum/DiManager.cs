@@ -148,8 +148,8 @@ namespace GeorgianPetroleum
                 else
                 {
                     var x = Company.GetLastErrorDescription();
-                    System.Runtime.InteropServices.Marshal.ReleaseComObject(oUfield);
-                  
+                    System.Runtime.InteropServices.Marshal.ReleaseComObject(oUfield); 
+
                     GC.Collect();
                     return false;
                 }
