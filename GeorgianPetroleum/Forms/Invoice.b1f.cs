@@ -41,7 +41,7 @@ namespace GeorgianPetroleum.Forms
 
         private SAPbouiCOM.Button Button0;
 
-     
+
 
         private void OnCustomInitialize()
         {
@@ -53,7 +53,7 @@ namespace GeorgianPetroleum.Forms
             BubbleEvent = true;
             var blanketAgreementNumber = ((EditText)(SAPbouiCOM.Framework.Application.SBO_Application.Forms.ActiveForm.Items.Item("1980002192")
                 .Specific)).Value;
-        
+
             var postingDateString = ((EditText)(SAPbouiCOM.Framework.Application.SBO_Application.Forms.ActiveForm.Items.Item("10")
                 .Specific)).Value;
 
@@ -100,16 +100,36 @@ namespace GeorgianPetroleum.Forms
             Matrix invoiceMatrix = (Matrix)SAPbouiCOM.Framework.Application.SBO_Application.Forms.ActiveForm.Items.Item("38").Specific;
             var model = DiManager.RsClient.GetWaybillModelFromId(wbId);
 
-         
-                SAPbouiCOM.EditText NetPrice =
-                    (SAPbouiCOM.EditText) invoiceMatrix.Columns.Item("14").Cells.Item(1).Specific;
-                SAPbouiCOM.EditText GrossPrice =
-                    (SAPbouiCOM.EditText) invoiceMatrix.Columns.Item("234000377").Cells.Item(1).Specific;
-          
+
+            SAPbouiCOM.EditText NetPrice =
+                (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("14").Cells.Item(1).Specific;
+            SAPbouiCOM.EditText GrossPrice =
+                (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("234000377").Cells.Item(1).Specific;
+
 
             foreach (GOOD good in model.GOODS_LIST)
             {
-                good.PRICE = NetPrice.Value;
+                var currency = GrossPrice.Value.Split(' ')[1];
+                SAPbouiCOM.EditText postingDateString =
+                    (EditText) Application.SBO_Application.Forms.ActiveForm.Items.Item("10").Specific;
+                DateTime postingDate = DateTime.ParseExact(postingDateString.Value, "yyyyMMdd",
+                    CultureInfo.InvariantCulture);
+                var rate = DiManager.GetCurrencyRate(currency, postingDate, DiManager.Company);
+
+                if (currency == "GEL")
+                {
+                    good.PRICE = GrossPrice.Value.Split(' ')[0];
+                    good.AMOUNT =
+                        (double.Parse(GrossPrice.Value.Split(' ')[0]) * double.Parse(good.QUANTITY)).ToString(CultureInfo
+                            .InvariantCulture);
+                }
+                else
+                {
+                    good.PRICE =
+                        (double.Parse(GrossPrice.Value.Split(' ')[0]) * rate).ToString(CultureInfo.InvariantCulture);
+                    good.AMOUNT = (double.Parse(GrossPrice.Value.Split(' ')[0]) * rate * double.Parse(good.QUANTITY))
+                        .ToString(CultureInfo.InvariantCulture);
+                }
             }
 
             var modelToXml = model.ToXml();

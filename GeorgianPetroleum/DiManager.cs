@@ -221,5 +221,60 @@ namespace GeorgianPetroleum
                 return false;
             }
         }
+
+        public static double GetCurrencyRate(string curCode, DateTime date, Company xCompany)
+        {
+            try
+            {
+
+                if (GetLocalCurrencyCode(xCompany) == GetSystemCurrencyCode(xCompany) && curCode == GetSystemCurrencyCode(xCompany) || curCode == GetLocalCurrencyCode(xCompany))
+                {
+                    return 1.0;
+                }
+                Company oCompany = xCompany;
+                SBObob oSbObob = (SBObob)oCompany.GetBusinessObject(BoObjectTypes.BoBridge);
+                Recordset oRecordSet = oSbObob.GetCurrencyRate(curCode, date.Date);
+                return double.Parse(oRecordSet.Fields.Item(0).Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                SAPbouiCOM.Framework.Application.SBO_Application.MessageBox(ex.Message, 1, "OK");
+            }
+            return 0;
+        }
+
+        public static string GetLocalCurrencyCode(SAPbobsCOM.Company xCompany)
+        {
+            try
+            {
+                Company oCompany = xCompany;
+
+                SBObob oSbObob = (SBObob)oCompany.GetBusinessObject(BoObjectTypes.BoBridge);
+                Recordset oRecordSet = oSbObob.GetLocalCurrency();
+                return oRecordSet.Fields.Item(0).Value.ToString();
+            }
+            catch (Exception ex)
+            {
+                SAPbouiCOM.Framework.Application.SBO_Application.MessageBox(ex.Message, 1, "OK");
+            }
+            return "0";
+        }
+
+        public static string GetSystemCurrencyCode(Company xCompany)
+        {
+            try
+            {
+                Company oCompany = xCompany;
+
+                SBObob oSbObob = (SBObob)oCompany.GetBusinessObject(BoObjectTypes.BoBridge);
+                Recordset oRecordSet = oSbObob.GetSystemCurrency();
+                return oRecordSet.Fields.Item(0).Value.ToString();
+            }
+            catch (Exception ex)
+            {
+                SAPbouiCOM.Framework.Application.SBO_Application.MessageBox(ex.Message, 1, "OK");
+            }
+            return "0";
+        }
     }
 }

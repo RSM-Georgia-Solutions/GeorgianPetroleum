@@ -246,7 +246,7 @@ namespace GeorgianPetroleum.RsClasses
 
             foreach (var field in GOODS_LIST)
             {
-                DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"SELECT Code FROM [@RSM_SWBI] WHERE U_W_NAME = N'{field.W_NAME}'"));
+                DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"SELECT Code FROM [@RSM_SWBI] WHERE U_W_NAME = N'{field.W_NAME.Replace("'","''")}'"));
                 if (!DiManager.Recordset.EoF)
                 {
                     SWBITable.GetByKey(DiManager.Recordset.Fields.Item("Code").Value.ToString());
@@ -288,7 +288,7 @@ namespace GeorgianPetroleum.RsClasses
             }
 
             UserTable WBARTable = DiManager.Company.UserTables.Item("RSM_WBAR");
-            if (!string.IsNullOrWhiteSpace(WBARCode))
+            if (!string.IsNullOrWhiteSpace(WBARCode) && WBARCode!="0")
             {
                 WBARTable.GetByKey(WBARCode);
             }
@@ -352,6 +352,14 @@ namespace GeorgianPetroleum.RsClasses
                 {
                     SAPbouiCOM.Framework.Application.SBO_Application.SetStatusBarMessage(
                         "Error : " + DiManager.Company.GetLastErrorDescription(), SAPbouiCOM.BoMessageTime.bmt_Short);
+                    try
+                    {
+                        DiManager.Company.EndTransaction(BoWfTransOpt.wf_RollBack);
+                    }
+                    catch (Exception e)
+                    {
+                        // ignored
+                    }
                     return;
                 }
             }

@@ -291,7 +291,14 @@ namespace GeorgianPetroleum.Forms
             }
             catch (Exception)
             {
-                ((ComboBox)(invoice.Items.Item("63").Specific)).Select("$");
+                try
+                {
+                    ((ComboBox)(invoice.Items.Item("63").Specific)).Select("$");
+                }
+                catch (Exception)
+                {
+ 
+                }
             }
 
             int rowIndex = 1;

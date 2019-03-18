@@ -33,8 +33,10 @@ namespace GeorgianPetroleum.Forms
         {
             this.Grid0 = ((SAPbouiCOM.Grid)(this.GetItem("Item_0").Specific));
             this.EditText0 = ((SAPbouiCOM.EditText)(this.GetItem("Item_1").Specific));
+            this.EditText0.LostFocusAfter += new SAPbouiCOM._IEditTextEvents_LostFocusAfterEventHandler(this.EditText0_LostFocusAfter);
             this.EditText0.PressedAfter += new SAPbouiCOM._IEditTextEvents_PressedAfterEventHandler(this.EditText0_PressedAfter);
             this.EditText1 = ((SAPbouiCOM.EditText)(this.GetItem("Item_2").Specific));
+            this.EditText1.LostFocusAfter += new SAPbouiCOM._IEditTextEvents_LostFocusAfterEventHandler(this.EditText1_LostFocusAfter);
             this.EditText1.PressedAfter += new SAPbouiCOM._IEditTextEvents_PressedAfterEventHandler(this.EditText1_PressedAfter);
             this.StaticText0 = ((SAPbouiCOM.StaticText)(this.GetItem("Item_3").Specific));
             this.StaticText1 = ((SAPbouiCOM.StaticText)(this.GetItem("Item_4").Specific));
@@ -66,10 +68,14 @@ namespace GeorgianPetroleum.Forms
         {
             var startDateString = EditText0.Value;
             var endDateString = EditText1.Value;
-            DateTime sDate = DateTime.ParseExact(startDateString, "yyyyMMdd", CultureInfo.InvariantCulture);
-            DateTime eDate = DateTime.ParseExact(endDateString, "yyyyMMdd", CultureInfo.InvariantCulture);
-            Grid0.DataTable.ExecuteQuery(DiManager.QueryHanaTransalte($"SELECT U_S_DATE as [დაწყების თარიღი], U_E_DATE as [დასრულების თარიღი],   U_ABS_NUMBER as [ხელშეკრულების ნომერი], U_PROFIT_MARGIN as [მარჟა], U_AVG_PRICE as [საშუალო ფასი] FROM [@RSM_PRCE] WHERE U_S_DATE BETWEEN '{sDate:s}' AND '{eDate:s}' "));
-            EditText3.Value = Grid0.DataTable.GetValue("საშუალო ფასი", 0).ToString();
+            if (!string.IsNullOrWhiteSpace(startDateString) && !string.IsNullOrWhiteSpace(endDateString))
+            {
+
+                DateTime sDate = DateTime.ParseExact(startDateString, "yyyyMMdd", CultureInfo.InvariantCulture);
+                DateTime eDate = DateTime.ParseExact(endDateString, "yyyyMMdd", CultureInfo.InvariantCulture);
+                Grid0.DataTable.ExecuteQuery(DiManager.QueryHanaTransalte($"SELECT U_S_DATE as [დაწყების თარიღი], U_E_DATE as [დასრულების თარიღი],   U_ABS_NUMBER as [ხელშეკრულების ნომერი], U_PROFIT_MARGIN as [მარჟა], U_AVG_PRICE as [საშუალო ფასი] FROM [@RSM_PRCE] WHERE U_S_DATE BETWEEN '{sDate:s}' AND '{eDate:s}' "));
+                EditText3.Value = Grid0.DataTable.GetValue("საშუალო ფასი", 0).ToString();
+            }
 
         }
 
@@ -271,15 +277,15 @@ namespace GeorgianPetroleum.Forms
 
             for (int i = 0; i < Grid0.DataTable.Rows.Count; i++)
             {
-                  startDate = DateTime.Parse(Grid0.DataTable.GetValue("დაწყების თარიღი", i).ToString());
-                  endtDate = DateTime.Parse(Grid0.DataTable.GetValue("დასრულების თარიღი", i).ToString());
-                  absNumber = Grid0.DataTable.GetValue("ხელშეკრულების ნომერი", i).ToString();
-                  U_PROFIT_MARGIN = Grid0.DataTable.GetValue("მარჟა", i).ToString();
+                startDate = DateTime.Parse(Grid0.DataTable.GetValue("დაწყების თარიღი", i).ToString());
+                endtDate = DateTime.Parse(Grid0.DataTable.GetValue("დასრულების თარიღი", i).ToString());
+                absNumber = Grid0.DataTable.GetValue("ხელშეკრულების ნომერი", i).ToString();
+                U_PROFIT_MARGIN = Grid0.DataTable.GetValue("მარჟა", i).ToString();
             }
 
             if (DiManager.Recordset.EoF)
             {
-                    DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"INSERT INTO [@RSM_PRCE] (U_S_DATE, U_E_DATE, U_ABS_NUMBER, U_PROFIT_MARGIN, U_AVG_PRICE) VALUES (N'{sDate:s}', N'{eDate:s}', N'{absNumber}', N'{U_PROFIT_MARGIN}', N'{avgPrice}') "));
+                DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"INSERT INTO [@RSM_PRCE] (U_S_DATE, U_E_DATE, U_ABS_NUMBER, U_PROFIT_MARGIN, U_AVG_PRICE) VALUES (N'{sDate:s}', N'{eDate:s}', N'{absNumber}', N'{U_PROFIT_MARGIN}', N'{avgPrice}') "));
             }
             else
             {
@@ -291,12 +297,24 @@ namespace GeorgianPetroleum.Forms
 
         private void EditText0_PressedAfter(object sboObject, SBOItemEventArg pVal)
         {
-             Refresh();
+            Refresh();
         }
 
         private void EditText1_PressedAfter(object sboObject, SBOItemEventArg pVal)
         {
             Refresh();
+        }
+
+        private void EditText0_LostFocusAfter(object sboObject, SBOItemEventArg pVal)
+        {
+            Refresh();
+
+        }
+
+        private void EditText1_LostFocusAfter(object sboObject, SBOItemEventArg pVal)
+        {
+            Refresh();
+
         }
     }
 }
