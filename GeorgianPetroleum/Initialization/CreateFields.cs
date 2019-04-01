@@ -14,11 +14,12 @@ namespace GeorgianPetroleum.Initialization
         public void Run(DiManager diManager)
         {
             DiManager.Company.StartTransaction();
-            if ( 
-                 diManager.AddField("OINV", "WbNumber", "ზედნადების ნომერი", BoFieldTypes.db_Alpha, 20, false, true) &&
+            if (
+                 //diManager.AddField("OINV", "WbNumber", "ზედნადების ნომერი", BoFieldTypes.db_Alpha, 20, false, true) &&
+                 //diManager.AddField("OOAT", "ProfitMargin", "მარჟა", BoFieldTypes.db_Alpha, 20, false, true) &&
                  diManager.AddField("OINV", "WbId", "ზედნადების ID", BoFieldTypes.db_Alpha, 20, false, true) &&
-                 diManager.AddField("OINV", "VatNumber", "ანგარიშ-ფაქტურის ნომერი", BoFieldTypes.db_Alpha, 20, false, true) &&
- 
+                 //diManager.AddField("OINV", "VatNumber", "ანგარიშ-ფაქტურის ნომერი", BoFieldTypes.db_Alpha, 20, false, true) &&
+
 
                 diManager.AddField("RSM_CPRM", "username", "username", SAPbobsCOM.BoFieldTypes.db_Alpha, 50, true) &&
                 diManager.AddField("RSM_CPRM", "password", "password", SAPbobsCOM.BoFieldTypes.db_Alpha, 50, true) &&

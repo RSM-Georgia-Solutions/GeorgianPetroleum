@@ -150,10 +150,7 @@ namespace GeorgianPetroleum.Forms
                 }
                 ItemsList itemsLists = new ItemsList(codes, _buyerCode, true);
                 itemsLists.Show();
-            }
-
-           
-
+            } 
           
         }
 

@@ -9,6 +9,7 @@ using Application = SAPbouiCOM.Framework.Application;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using GeorgianPetroleum.RsClasses;
+using SAPbobsCOM;
 
 namespace GeorgianPetroleum.Forms
 {
@@ -57,6 +58,14 @@ namespace GeorgianPetroleum.Forms
             var postingDateString = ((EditText)(SAPbouiCOM.Framework.Application.SBO_Application.Forms.ActiveForm.Items.Item("10")
                 .Specific)).Value;
 
+            Recordset recSet =
+                (Recordset) DiManager.Company.GetBusinessObject(BoObjectTypes
+                    .BoRecordset);
+            recSet.DoQuery(DiManager.QueryHanaTransalte($"select U_01, U_02 from OOAT WHERE Number = '{blanketAgreementNumber}'"));
+
+            string subContractorCode  = recSet.Fields.Item("U_01").Value.ToString();
+            string subContractorName = recSet.Fields.Item("U_02").Value.ToString();
+
             DateTime postingDate = DateTime.ParseExact(postingDateString, "yyyyMMdd", CultureInfo.InvariantCulture);
 
             DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"SELECT U_AVG_PRICE, U_PROFIT_MARGIN FROM [@RSM_PRCE] WHERE U_ABS_NUMBER = '{blanketAgreementNumber}' AND '{postingDate:s}' BETWEEN U_S_DATE AND U_E_DATE"));
@@ -81,13 +90,19 @@ namespace GeorgianPetroleum.Forms
             {
                 SAPbouiCOM.EditText NetPrice = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("14").Cells.Item(i).Specific;
                 SAPbouiCOM.EditText GrossPrice = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("234000377").Cells.Item(i).Specific;
+                SAPbouiCOM.EditText SubContractorCode = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("U_ContractorCode").Cells.Item(i).Specific;
+                SAPbouiCOM.EditText SubContractorName = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("U_Qcontractor").Cells.Item(i).Specific;
+
+                SubContractorCode.Value = subContractorCode;
+                SubContractorName.Value = subContractorName;
+
                 try
                 {
-                    NetPrice.Value = (avgPrice + profitMargin).ToString(CultureInfo.InvariantCulture);
+                    GrossPrice.Value = (avgPrice + profitMargin).ToString(CultureInfo.InvariantCulture);
                 }
                 catch (Exception e)
                 {
-                    GrossPrice.Value = (avgPrice + profitMargin).ToString(CultureInfo.InvariantCulture);
+                    NetPrice.Value = ((avgPrice + profitMargin) / 1.18m).ToString(CultureInfo.InvariantCulture);
                 }
             }
         }

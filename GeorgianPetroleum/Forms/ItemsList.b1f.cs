@@ -58,7 +58,7 @@ namespace GeorgianPetroleum.Forms
 
         private void Refresh()
         {
-            string query = $"Select ItemCode as [საქონლის კოდი], ItemName as [საქონლის დასახელბა] from OITM WHERE ItemType != 'F'";
+            string query = $"Select ItemCode as [საქონლის კოდი], ItemName as [საქონლის დასახელბა] from OITM WHERE ItemType != 'F' AND  SellItem = 'Y' AND frozenFor = 'N'";
             Grid0.DataTable.ExecuteQuery(DiManager.QueryHanaTransalte(query));
         }
 

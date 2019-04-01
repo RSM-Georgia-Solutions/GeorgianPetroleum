@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using SAPbobsCOM;
+using SAPbouiCOM;
+using Application = SAPbouiCOM.Framework.Application;
 
 namespace GeorgianPetroleum.RsClasses
 {
@@ -363,7 +365,15 @@ namespace GeorgianPetroleum.RsClasses
                     return;
                 }
             }
-            DiManager.Company.EndTransaction(BoWfTransOpt.wf_Commit);
+            try
+            {
+                DiManager.Company.EndTransaction(BoWfTransOpt.wf_Commit);
+            }
+            catch (Exception e )
+            {
+                Application.SBO_Application.SetStatusBarMessage(e.Message,
+                    BoMessageTime.bmt_Short, true);
+            }
         }
     }
 

@@ -68,13 +68,16 @@ namespace GeorgianPetroleum.Forms
         {
             var startDateString = EditText0.Value;
             var endDateString = EditText1.Value;
+            Button0.Item.Visible = false;
+            EditText2.Item.Visible = false;
+            Button1.Item.Visible = false;
             if (!string.IsNullOrWhiteSpace(startDateString) && !string.IsNullOrWhiteSpace(endDateString))
             {
-
                 DateTime sDate = DateTime.ParseExact(startDateString, "yyyyMMdd", CultureInfo.InvariantCulture);
                 DateTime eDate = DateTime.ParseExact(endDateString, "yyyyMMdd", CultureInfo.InvariantCulture);
-                Grid0.DataTable.ExecuteQuery(DiManager.QueryHanaTransalte($"SELECT U_S_DATE as [დაწყების თარიღი], U_E_DATE as [დასრულების თარიღი],   U_ABS_NUMBER as [ხელშეკრულების ნომერი], U_PROFIT_MARGIN as [მარჟა], U_AVG_PRICE as [საშუალო ფასი] FROM [@RSM_PRCE] WHERE U_S_DATE BETWEEN '{sDate:s}' AND '{eDate:s}' "));
+                Grid0.DataTable.ExecuteQuery(DiManager.QueryHanaTransalte($"SELECT OOAT.Number as [ხელშეკრულების ნომერი], OOAT.U_ProfitMArgin as [მარჟა], U_S_DATE as [დაწყების თარიღი], U_E_DATE as [დასრულების თარიღი],     U_AVG_PRICE as [საშუალო ფასი] FROM OOAT left join (select * from [@RSM_PRCE] WHERE U_S_DATE BETWEEN '{sDate:s}' AND '{eDate:s}') [@RSM_PRCE] on OOAT.Number = [@RSM_PRCE].U_ABS_NUMBER  where OOAT.Cancelled = 'N' AND OOAT.BpType = 'C' AND OOAT.[Status] = 'A'   order by U_S_DATE desc"));
                 EditText3.Value = Grid0.DataTable.GetValue("საშუალო ფასი", 0).ToString();
+                //WHERE U_S_DATE BETWEEN '{sDate:s}' AND '{eDate:s}'
             }
 
         }
@@ -264,32 +267,33 @@ namespace GeorgianPetroleum.Forms
         {
             var startDateString = EditText0.Value;
             var endDateString = EditText1.Value;
+            Recordset recSet =
+                (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes
+                    .BoRecordset);
             DateTime sDate = DateTime.ParseExact(startDateString, "yyyyMMdd", CultureInfo.InvariantCulture);
             DateTime eDate = DateTime.ParseExact(endDateString, "yyyyMMdd", CultureInfo.InvariantCulture);
             string query = $"SELECT * FROM [@RSM_PRCE] WHERE U_S_DATE BETWEEN '{sDate:s}' AND '{eDate:s}'";
-            DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte(query));
-
-            DateTime startDate = DateTime.MaxValue;
-            DateTime endtDate = DateTime.MaxValue;
+            recSet.DoQuery(DiManager.QueryHanaTransalte(query));
+ 
             string absNumber = string.Empty;
             string U_PROFIT_MARGIN = string.Empty;
             string avgPrice = EditText3.Value;
 
+            var countDb = recSet.RecordCount;
+            var countGrid = Grid0.DataTable.Rows.Count;
             for (int i = 0; i < Grid0.DataTable.Rows.Count; i++)
             {
-                startDate = DateTime.Parse(Grid0.DataTable.GetValue("დაწყების თარიღი", i).ToString());
-                endtDate = DateTime.Parse(Grid0.DataTable.GetValue("დასრულების თარიღი", i).ToString());
                 absNumber = Grid0.DataTable.GetValue("ხელშეკრულების ნომერი", i).ToString();
                 U_PROFIT_MARGIN = Grid0.DataTable.GetValue("მარჟა", i).ToString();
-            }
 
-            if (DiManager.Recordset.EoF)
-            {
-                DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"INSERT INTO [@RSM_PRCE] (U_S_DATE, U_E_DATE, U_ABS_NUMBER, U_PROFIT_MARGIN, U_AVG_PRICE) VALUES (N'{sDate:s}', N'{eDate:s}', N'{absNumber}', N'{U_PROFIT_MARGIN}', N'{avgPrice}') "));
-            }
-            else
-            {
-                DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"UPDATE [@RSM_PRCE] SET U_S_DATE = '{startDate}',  U_E_DATE = '{endtDate}',  U_ABS_NUMBER = '{absNumber}',  U_PROFIT_MARGIN = '{U_PROFIT_MARGIN}',  U_AVG_PRICE = '{avgPrice}' WHERE U_S_DATE BETWEEN '{sDate:s}' AND '{eDate:s}'"));
+                if (recSet.Fields.Item("U_ABS_NUMBER").Value.ToString() != absNumber)
+                {
+                    DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"INSERT INTO [@RSM_PRCE] (U_S_DATE, U_E_DATE, U_ABS_NUMBER,  U_AVG_PRICE, U_PROFIT_MARGIN) VALUES (N'{sDate:s}', N'{eDate:s}', N'{absNumber}', N'{avgPrice}', N'{U_PROFIT_MARGIN}') "));
+                }
+                else
+                {
+                    DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"UPDATE [@RSM_PRCE] SET U_PROFIT_MARGIN = N'{U_PROFIT_MARGIN}', U_AVG_PRICE = '{avgPrice}', U_ABS_NUMBER = N'{absNumber}' WHERE U_S_DATE BETWEEN '{sDate:s}' AND '{eDate:s}' AND U_ABS_NUMBER = N'{absNumber}'"));
+                }
             }
 
             Refresh();

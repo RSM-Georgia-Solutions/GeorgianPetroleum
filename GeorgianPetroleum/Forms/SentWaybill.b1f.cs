@@ -190,8 +190,8 @@ namespace GeorgianPetroleum.Forms
             ComboBox1.ValidValues.Add("5", "უკან დაბრუნება");
             ComboBox1.ValidValues.Add("6", "ქვეზედნადები");
 
-            ComboBox0.ValidValues.Add("1", "მყიდველი");
-            ComboBox0.ValidValues.Add("2", "გამყიდველი");
+            ComboBox0.ValidValues.Add("0", "მყიდველი");
+            ComboBox0.ValidValues.Add("1", "გამყიდველი");
 
             ComboBox2.ValidValues.Add("1", "საავტომობილო");
             ComboBox2.ValidValues.Add("2", "სარკინიგზო");
