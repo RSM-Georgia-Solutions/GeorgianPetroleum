@@ -353,7 +353,7 @@ namespace GeorgianPetroleum.RsClasses
             WBARTable.UserFields.Fields.Item("U_" + nameof(TOTAL_QUANTITY)).Value = TOTAL_QUANTITY ?? "";
             WBARTable.UserFields.Fields.Item("U_" + nameof(BUYER_S_USER_ID)).Value = BUYER_S_USER_ID ?? "";
             WBARTable.UserFields.Fields.Item("U_" + nameof(IS_CONFIRMED)).Value = IS_CONFIRMED ?? "";
-            WBARTable.UserFields.Fields.Item("U_" + nameof(INVOICE_DOCENTRY)).Value = INVOICE_DOCENTRY ?? "";
+           // WBARTable.UserFields.Fields.Item("U_" + nameof(INVOICE_DOCENTRY)).Value = INVOICE_DOCENTRY ?? "";
             // WBARTable.UserFields.Fields.Item("U_" + nameof(IS_CORRECTED)).Value = IS_CORRECTED ?? "";
             WBARTable.Name = Name ?? "";
 

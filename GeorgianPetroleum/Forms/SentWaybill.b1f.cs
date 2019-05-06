@@ -69,9 +69,8 @@ namespace GeorgianPetroleum.Forms
 
         private void FillFormFromModel()
         {
-            string query = $"SELECT U_W_NAME as [საქონლის დასახელება], [@RSM_UOMS].U_UOM_RS as [საზომი ერთეული], U_QUANTITY as [რაოდენობა], U_PRICE as [ერთეულის ფასი], U_AMOUNT as [ფასი]  FROM [@RSM_SWBI] join [@RSM_UOMS] on [@RSM_UOMS].U_ID = [@RSM_SWBI].U_UNIT_ID WHERE U_WB_CODE = ${_waybillModel.ID}";
+            string query = $"SELECT  U_W_NAME as [საქონლის დასახელება], [@RSM_UOMS].U_UOM_RS as [საზომი ერთეული], U_QUANTITY as [რაოდენობა], U_PRICE as [ერთეულის ფასი], U_AMOUNT as [ფასი] , CASE WHEN U_VAT_TYPE = 0 then N'ჩვეულებრივი' WHEN U_VAT_TYPE = 1 then N'ნულოვანი' else N'დაუბეგრავი' end as [დაბეგვრის ტიპი] FROM [@RSM_SWBI] join [@RSM_UOMS] on [@RSM_UOMS].U_ID = [@RSM_SWBI].U_UNIT_ID  WHERE U_WB_CODE = ${_waybillModel.ID}";
             Grid0.DataTable.ExecuteQuery(query);
-
 
             try
             {
@@ -102,7 +101,8 @@ namespace GeorgianPetroleum.Forms
             EditText0.Value = _waybillModel.SELLER_NAME;
             EditText10.Value = _waybillModel.START_ADDRESS;
             EditText11.Value = _waybillModel.WAYBILL_NUMBER;
-            EditText14.Value = _waybillModel.COMMENT;
+            EditText14.Value = _waybillModel.COMMENT; 
+
             DateTime dt = DateTime.Parse(_waybillModel.ACTIVATE_DATE);
             EditText12.Value = dt.ToString("g");
 
@@ -324,9 +324,41 @@ namespace GeorgianPetroleum.Forms
             foreach (var item in waybillModel.GOODS_LIST)
             {
                 SAPbouiCOM.EditText ItemCode = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("1").Cells.Item(rowIndex).Specific;
-                ItemCode.Value = rs_sap_items[item.W_NAME];
                 SAPbouiCOM.EditText Quantity = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("11").Cells.Item(rowIndex).Specific;
+                SAPbouiCOM.ComboBox taxGroup = (SAPbouiCOM.ComboBox)invoiceMatrix.Columns.Item("18").Cells.Item(rowIndex).Specific;
+                SAPbouiCOM.EditText formUnitPrice = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("14").Cells.Item(rowIndex).Specific;
+                string vatType = string.Empty;
+
+               
+                ItemCode.Value = rs_sap_items[item.W_NAME];
                 Quantity.Value = item.QUANTITY;
+
+                bool isBpVatPayer = DiManager.RsClient.IsVatPayer(waybillModel.SELLER_TIN);
+
+                if (item.VAT_TYPE == "1" || item.VAT_TYPE == "2" || !isBpVatPayer)
+                {
+                    Recordset recSet = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
+                    recSet.DoQuery(DiManager.QueryHanaTransalte($"select * from OVTG where Rate = 0 and category = 'O'"));
+                    vatType = recSet.Fields.Item("Code").Value.ToString();
+                }
+                else
+                {
+                    Recordset recSet = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
+                    recSet.DoQuery(DiManager.QueryHanaTransalte($"select * from OVTG where Rate = 18 and category = 'O' AND Code ='VAT_18'"));
+                    vatType = recSet.Fields.Item("Code").Value.ToString();
+                }
+
+                try
+                {
+                    //formUnitPrice.Value = "0";
+                    taxGroup.Select(vatType, BoSearchKey.psk_ByValue);
+                }
+                catch (Exception e)
+                {
+                    Application.SBO_Application.SetStatusBarMessage("საქონლის ფასი / დღგ-ს ჯგუფი გამოსაჩენია  Form - Settings",
+                        BoMessageTime.bmt_Short, true);
+                }
+
 
                 SAPbouiCOM.EditText unitCode = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("1470002145").Cells.Item(rowIndex).Specific;
                 DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"SELECT * FROM [@RSM_UOMS] WHERE U_ID = {item.UNIT_ID}"));

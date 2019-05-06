@@ -59,6 +59,13 @@ namespace GeorgianPetroleum
             return authenticated;
         }
 
+
+        public bool IsVatPayer(string tin)
+        {
+            return _client.is_vat_payer_tin(ServiceUser, ServiceUserPassword, tin);
+        }
+
+
         public void GetWaybills(WayBilsRequest req)
         {
             XElement sentWaybillsXml = _client.get_waybills(ServiceUser, ServiceUserPassword, req.itypes, req.buyerTin, req.statuses,

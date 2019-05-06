@@ -185,20 +185,13 @@ namespace GeorgianPetroleum.Forms
                 if (currency == "GEL")
                 {
                     good.PRICE = grossPriceAfterDisc.Value.Split(' ')[0];
-                    good.AMOUNT = 
-                        (double.Parse(grossTotal.Value.Split(' ')[0], CultureInfo.InvariantCulture) * double.Parse(good.QUANTITY, CultureInfo.InvariantCulture)).ToString(CultureInfo
-                            .InvariantCulture);
-                    //good.AMOUNT =
-                    //    (double.Parse(grossPriceAfterDisc.Value.Split(' ')[0], CultureInfo.InvariantCulture) * double.Parse(good.QUANTITY, CultureInfo.InvariantCulture)).ToString(CultureInfo
-                    //        .InvariantCulture);
+                    good.AMOUNT = (double.Parse(grossTotal.Value.Split(' ')[0], CultureInfo.InvariantCulture).ToString());         
                 }
                 else
                 {
                     good.PRICE =
                         (double.Parse(grossPriceAfterDisc.Value.Split(' ')[0], CultureInfo.InvariantCulture) * rate).ToString(CultureInfo.InvariantCulture);
-                    good.AMOUNT = (double.Parse(grossTotal.Value.Split(' ')[0], CultureInfo.InvariantCulture) * rate * double.Parse(good.QUANTITY, CultureInfo.InvariantCulture)).ToString(CultureInfo.InvariantCulture);
-                    //good.AMOUNT = (double.Parse(grossPriceAfterDisc.Value.Split(' ')[0], CultureInfo.InvariantCulture) * rate * double.Parse(good.QUANTITY, CultureInfo.InvariantCulture))
-                    //    .ToString(CultureInfo.InvariantCulture);
+                    good.AMOUNT = (double.Parse(grossTotal.Value.Split(' ')[0], CultureInfo.InvariantCulture) * rate).ToString(CultureInfo.InvariantCulture);                     
                 }
             }
 
