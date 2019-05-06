@@ -69,18 +69,25 @@ namespace GeorgianPetroleum.Forms
 
         private void FillFormFromModel()
         {
-            string query = $"SELECT U_W_NAME as [საქონლის დასახელება], U_UNIT_ID as [საზომი ერთეული], U_QUANTITY as [რაოდენობა], U_PRICE as [ერთეულის ფასი], U_AMOUNT as [ფასი]  FROM [@RSM_SWBI] WHERE U_WB_CODE = ${_waybillModel.ID}";
+            string query = $"SELECT U_W_NAME as [საქონლის დასახელება], [@RSM_UOMS].U_UOM_RS as [საზომი ერთეული], U_QUANTITY as [რაოდენობა], U_PRICE as [ერთეულის ფასი], U_AMOUNT as [ფასი]  FROM [@RSM_SWBI] join [@RSM_UOMS] on [@RSM_UOMS].U_ID = [@RSM_SWBI].U_UNIT_ID WHERE U_WB_CODE = ${_waybillModel.ID}";
             Grid0.DataTable.ExecuteQuery(query);
 
 
-            if (!string.IsNullOrWhiteSpace(_waybillModel.TRAN_COST_PAYER))
+            try
             {
-                ComboBox0.Select(_waybillModel.TRAN_COST_PAYER);
+                if (!string.IsNullOrWhiteSpace(_waybillModel.TRAN_COST_PAYER))
+                {
+                    ComboBox0.Select(_waybillModel.TRAN_COST_PAYER);
+                }
+                ComboBox1.Select(_waybillModel.TYPE);
+                if (!string.IsNullOrWhiteSpace(_waybillModel.TRANS_ID))
+                {
+                    ComboBox2.Select(_waybillModel.TRANS_ID);
+                }
+
             }
-            ComboBox1.Select(_waybillModel.TYPE);
-            if (!string.IsNullOrWhiteSpace(_waybillModel.TRANS_ID))
+            catch (Exception)
             {
-                ComboBox2.Select(_waybillModel.TRANS_ID);
             }
 
             EditText1.Value = _waybillModel.BUYER_TIN;
@@ -190,8 +197,10 @@ namespace GeorgianPetroleum.Forms
             ComboBox1.ValidValues.Add("5", "უკან დაბრუნება");
             ComboBox1.ValidValues.Add("6", "ქვეზედნადები");
 
-            ComboBox0.ValidValues.Add("0", "მყიდველი");
-            ComboBox0.ValidValues.Add("1", "გამყიდველი");
+
+            ComboBox0.ValidValues.Add("1", "მყიდველი");
+            ComboBox0.ValidValues.Add("2", "გამყიდველი");
+
 
             ComboBox2.ValidValues.Add("1", "საავტომობილო");
             ComboBox2.ValidValues.Add("2", "სარკინიგზო");
@@ -203,6 +212,7 @@ namespace GeorgianPetroleum.Forms
             GetItem("Item_4").DisplayDesc = true;
             GetItem("Item_27").DisplayDesc = true;
             GetItem("Item_15").DisplayDesc = true;
+            GetItem("Item_29").Visible = false;
         }
 
         private SAPbouiCOM.EditText EditText1;
@@ -229,7 +239,7 @@ namespace GeorgianPetroleum.Forms
 
         private void Button0_PressedAfter(object sboObject, SAPbouiCOM.SBOItemEventArg pVal)
         {
-           // FillModelFromForm();
+            // FillModelFromForm();
         }
 
         private SAPbouiCOM.EditText EditText14;
@@ -256,7 +266,7 @@ namespace GeorgianPetroleum.Forms
             {
                 var rsItemId = DiManager.Recordset.Fields.Item("RS-ის საქონელი").Value.ToString();
                 var sapItemId = DiManager.Recordset.Fields.Item("Sap-ის საქონელი").Value.ToString();
-                rs_sap_items.Add(rsItemId,sapItemId);
+                rs_sap_items.Add(rsItemId, sapItemId);
                 DiManager.Recordset.MoveNext();
             }
 
@@ -278,13 +288,22 @@ namespace GeorgianPetroleum.Forms
             Matrix invoiceMatrix = (Matrix)invoice.Items.Item("38").Specific;
             SAPbouiCOM.EditText postingDate = (EditText)invoice.Items.Item("10").Specific;
             postingDate.Value = DateTime.Parse(waybillModel.ACTIVATE_DATE).ToString("yyyyMMdd");
-            ((EditText)(invoice.Items.Item("4").Specific)).Value = buyerCode;
-            ((EditText)(invoice.Items.Item("4").Specific)).Value = buyerCode;
+            try
+            {
+                ((EditText)(invoice.Items.Item("4").Specific)).Value = string.IsNullOrWhiteSpace(buyerCode) ? "Temp" : buyerCode;
+            
+            //((EditText)(invoice.Items.Item("4").Specific)).Value = buyerCode;
             ((EditText)(invoice.Items.Item("U_WbNumber").Specific)).Value = _waybillModel.WAYBILL_NUMBER;
 
             invoice.DataSources.UserDataSources.Item("wbid").Value = _waybillModel.ID;
-             
- 
+
+            }
+            catch (Exception e)
+            {
+                Application.SBO_Application.SetStatusBarMessage("BP კოდით Temp ვერ მოიძებნა",
+                    BoMessageTime.bmt_Short, true);
+                return 0;
+            }
             try
             {
                 ((ComboBox)(invoice.Items.Item("63").Specific)).Select("USD");
@@ -297,7 +316,7 @@ namespace GeorgianPetroleum.Forms
                 }
                 catch (Exception)
                 {
- 
+
                 }
             }
 
@@ -317,10 +336,17 @@ namespace GeorgianPetroleum.Forms
                         BoMessageTime.bmt_Short, true);
                     return 0;
                 }
-                unitCode.Value = DiManager.Recordset.Fields.Item("U_UOM_SAP").Value.ToString();
+                try
+                {
+                    unitCode.Value = DiManager.Recordset.Fields.Item("U_UOM_SAP").Value.ToString();
+                }
+                catch (Exception)
+                {
+
+                }
                 //invoiceMatrix.AddRow();
                 rowIndex++;
-            } 
+            }
 
             return 0;
         }
@@ -329,11 +355,11 @@ namespace GeorgianPetroleum.Forms
 
         private void Button2_PressedAfter(object sboObject, SBOItemEventArg pVal)
         {
-            if (string.IsNullOrWhiteSpace(buyerCode))
-            {
-                Application.SBO_Application.SetStatusBarMessage("ამ საიდენტიფიკაციო კოდიტ ბიზნეს პარტნიორი ვერ მოიძებნა",
-                    BoMessageTime.bmt_Short, true);
-            }
+            //if (string.IsNullOrWhiteSpace(buyerCode))
+            //{
+            //    Application.SBO_Application.SetStatusBarMessage("ამ საიდენტიფიკაციო კოდიტ ბიზნეს პარტნიორი ვერ მოიძებნა",
+            //        BoMessageTime.bmt_Short, true);
+            //}
             MatchingTable matchingTable = new MatchingTable(buyerCode, itemCodes, _waybillModel.ID);
             matchingTable.Show();
         }

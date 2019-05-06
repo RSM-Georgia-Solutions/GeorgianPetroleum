@@ -22,7 +22,7 @@ namespace GeorgianPetroleum
                 MyMenu.AddMenuItems();
                 Initial initial = new Initial();
                 DiManager diManager = new DiManager();
-                initial.Run(diManager);
+                //initial.Run(diManager);
                 var recordset = (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes.BoRecordset);
                 try
                 {

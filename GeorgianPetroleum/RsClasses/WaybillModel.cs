@@ -242,16 +242,28 @@ namespace GeorgianPetroleum.RsClasses
         {
 
             DiManager.Company.StartTransaction();
-            DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"SELECT Code FROM [@RSM_WBAR] WHERE U_ID = '{ID}'"));
-            string WBARCode  = DiManager.Recordset.Fields.Item("Code").Value.ToString();
+            Recordset recSet =
+                (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes
+                    .BoRecordset);
+
+            Recordset recSet2 =
+                (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes
+                    .BoRecordset);
+
+            recSet.DoQuery(DiManager.QueryHanaTransalte($"SELECT Code FROM [@RSM_WBAR] WHERE U_ID = '{ID}'"));
+            string WBARCode = recSet.Fields.Item("Code").Value.ToString();
             UserTable SWBITable = DiManager.Company.UserTables.Item("RSM_SWBI");
 
             foreach (var field in GOODS_LIST)
             {
-                DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"SELECT Code FROM [@RSM_SWBI] WHERE U_W_NAME = N'{field.W_NAME.Replace("'","''")}'"));
-                if (!DiManager.Recordset.EoF)
+                var name = field.W_NAME.Replace("'", "''");
+
+                recSet2.DoQuery(DiManager.QueryHanaTransalte($"SELECT Code FROM [@RSM_SWBI] WHERE U_W_NAME = N'{name}'"));
+
+
+                if (!recSet2.EoF)
                 {
-                    SWBITable.GetByKey(DiManager.Recordset.Fields.Item("Code").Value.ToString());
+                    SWBITable.GetByKey(recSet2.Fields.Item("Code").Value.ToString());
                 }
 
                 SWBITable.UserFields.Fields.Item("U_" + nameof(field.AMOUNT)).Value = field.AMOUNT ?? "";
@@ -269,7 +281,7 @@ namespace GeorgianPetroleum.RsClasses
                 SWBITable.UserFields.Fields.Item("U_" + nameof(WAYBILL_NUMBER)).Value = WAYBILL_NUMBER ?? "";
                 SWBITable.UserFields.Fields.Item("U_WB_CODE").Value = ID ?? "";
 
-                if (DiManager.Recordset.EoF)
+                if (recSet2.EoF)
                 {
                     int Ret = SWBITable.Add();
                     if (Ret != 0)
@@ -290,7 +302,7 @@ namespace GeorgianPetroleum.RsClasses
             }
 
             UserTable WBARTable = DiManager.Company.UserTables.Item("RSM_WBAR");
-            if (!string.IsNullOrWhiteSpace(WBARCode) && WBARCode!="0")
+            if (!string.IsNullOrWhiteSpace(WBARCode) && WBARCode != "0")
             {
                 WBARTable.GetByKey(WBARCode);
             }
@@ -304,7 +316,15 @@ namespace GeorgianPetroleum.RsClasses
             WBARTable.UserFields.Fields.Item("U_" + nameof(CHEK_BUYER_TIN)).Value = CHEK_BUYER_TIN ?? "";
             WBARTable.UserFields.Fields.Item("U_" + nameof(CHEK_DRIVER_TIN)).Value = CHEK_DRIVER_TIN ?? "";
             WBARTable.UserFields.Fields.Item("U_" + nameof(CLOSE_DATE)).Value = CLOSE_DATE ?? "";
-            WBARTable.UserFields.Fields.Item("U_" + nameof(COMMENT)).Value = COMMENT ?? "";
+            try
+            {
+                WBARTable.UserFields.Fields.Item("U_" + nameof(COMMENT)).Value = COMMENT ?? "";
+            }
+            catch (Exception e)
+            {
+                Application.SBO_Application.SetStatusBarMessage("კომენტარის ველი აჭარბებს მაქსიმალურ ზომას",
+                    BoMessageTime.bmt_Short, true);
+            }
             WBARTable.UserFields.Fields.Item("U_" + nameof(ID)).Value = ID ?? "";
             WBARTable.UserFields.Fields.Item("U_" + nameof(CREATE_DATE)).Value = CREATE_DATE ?? "";
             WBARTable.UserFields.Fields.Item("U_" + nameof(CUST_NAME)).Value = CUST_NAME ?? "";
@@ -337,7 +357,7 @@ namespace GeorgianPetroleum.RsClasses
             // WBARTable.UserFields.Fields.Item("U_" + nameof(IS_CORRECTED)).Value = IS_CORRECTED ?? "";
             WBARTable.Name = Name ?? "";
 
-            if (DiManager.Recordset.EoF)
+            if (recSet.EoF)
             {
                 int Ret1 = WBARTable.Add();
                 if (Ret1 != 0 && Ret1 != -2035)
@@ -369,7 +389,7 @@ namespace GeorgianPetroleum.RsClasses
             {
                 DiManager.Company.EndTransaction(BoWfTransOpt.wf_Commit);
             }
-            catch (Exception e )
+            catch (Exception e)
             {
                 Application.SBO_Application.SetStatusBarMessage(e.Message,
                     BoMessageTime.bmt_Short, true);

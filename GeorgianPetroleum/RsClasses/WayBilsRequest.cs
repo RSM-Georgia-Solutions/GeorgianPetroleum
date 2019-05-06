@@ -27,7 +27,7 @@ namespace GeorgianPetroleum.RsClasses
         public string sUserIds;
         public string comment;
 
-        public WayBilsRequest(DateTime? start, DateTime? end, string iTypes)
+        public WayBilsRequest(DateTime? start, DateTime? end, string iTypes, string statusesr)
         {
             beginDateS = start;
             beginDateE = end;
@@ -40,7 +40,7 @@ namespace GeorgianPetroleum.RsClasses
             fullAmount = null;
             itypes = iTypes;
             sellerTin = null;
-            statuses = null;
+            statuses = statusesr;
             carNumber = null;
             driverTin = null;
             sUserIds = null;

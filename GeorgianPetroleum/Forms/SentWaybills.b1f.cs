@@ -46,11 +46,21 @@ namespace GeorgianPetroleum.Forms
         private void OnCustomInitialize()
         {
             Refresh();
-        }
+            Invoice.refresWaybill = Refresh;
+        } 
 
         private void Refresh()
         {
-            string query = $"SELECT U_ID as [ზედნადების ID], U_WAYBILL_NUMBER as [ზედნადების ნომერი], U_TOTAL_QUANTITY as [რაოდენობა]," + $"U_FULL_AMOUNT as [ღირებულება],  U_BUYER_NAME as [მყიდველი], U_SELLER_NAME as [გამყიდველი], U_START_ADDRESS as [დაწყების ადგილი]," + $"U_END_ADDRESS as [დასტრულების ადგილი], U_DRIVER_TIN as [მძღოლის პ/ნ], U_DRIVER_NAME as [მძღოლის სახელი], U_CAR_NUMBER as [ა/მ ნომერი]   FROM [@RSM_WBAR]";
+            string query = $@"SELECT U_ID as [ზედნადების ID], 
+                U_WAYBILL_NUMBER as [ზედნადების ნომერი],
+                U_INVOICE_DOCENTRY as [ინვოისის ნომერი],
+                U_TOTAL_QUANTITY as [რაოდენობა], U_FULL_AMOUNT as [ღირებულება],
+                U_BUYER_NAME as [მყიდველი], U_SELLER_NAME as [გამყიდველი],
+                U_ACTIVATE_DATE as [გააქტიურების თარიღი], 
+                U_START_ADDRESS as [დაწყების ადგილი],
+                U_END_ADDRESS as [დასრულების ადგილი],
+                U_DRIVER_TIN as [მძღოლის პ / ნ], U_DRIVER_NAME as [მძღოლის სახელი], 
+                U_CAR_NUMBER as [ა / მ ნომერი] FROM[@RSM_WBAR]";
             Grid0.DataTable.ExecuteQuery(query);
         }
 
@@ -63,7 +73,7 @@ namespace GeorgianPetroleum.Forms
                 Application.SBO_Application.SetStatusBarMessage("მიუთითეთ ჩამოტვირტვის თარიღი",
                     BoMessageTime.bmt_Short, true);
             }
-            List<WayBilsRequest> wayBilsRequest = DiManager.RsClient.GetRequest(startDate, endDate);
+            List<WayBilsRequest> wayBilsRequest = DiManager.RsClient.GetRequest(startDate, endDate, "2,3");
             foreach (var req in wayBilsRequest)
             {
                 DiManager.RsClient.GetWaybills(req);

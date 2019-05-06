@@ -16,6 +16,7 @@ using DataColumn = System.Data.DataColumn;
 using DataTable = System.Data.DataTable;
 using System.Globalization;
 using SAPbobsCOM;
+using Application = SAPbouiCOM.Framework.Application;
 
 namespace GeorgianPetroleum.Forms
 {
@@ -281,18 +282,28 @@ namespace GeorgianPetroleum.Forms
 
             var countDb = recSet.RecordCount;
             var countGrid = Grid0.DataTable.Rows.Count;
+
             for (int i = 0; i < Grid0.DataTable.Rows.Count; i++)
             {
                 absNumber = Grid0.DataTable.GetValue("ხელშეკრულების ნომერი", i).ToString();
                 U_PROFIT_MARGIN = Grid0.DataTable.GetValue("მარჟა", i).ToString();
+                if (string.IsNullOrWhiteSpace(U_PROFIT_MARGIN))
+                {
+                    Application.SBO_Application.SetStatusBarMessage("ხელშეკრულებაში მარჟა არ არის განსაზღვრული",
+                        BoMessageTime.bmt_Short, true);
+                    return;
+                }
 
-                if (recSet.Fields.Item("U_ABS_NUMBER").Value.ToString() != absNumber)
+                //string absNumberDb = recSet.Fields.Item("U_ABS_NUMBER").Value.ToString();
+
+                if (recSet.EoF)
                 {
                     DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"INSERT INTO [@RSM_PRCE] (U_S_DATE, U_E_DATE, U_ABS_NUMBER,  U_AVG_PRICE, U_PROFIT_MARGIN) VALUES (N'{sDate:s}', N'{eDate:s}', N'{absNumber}', N'{avgPrice}', N'{U_PROFIT_MARGIN}') "));
                 }
                 else
                 {
                     DiManager.Recordset.DoQuery(DiManager.QueryHanaTransalte($"UPDATE [@RSM_PRCE] SET U_PROFIT_MARGIN = N'{U_PROFIT_MARGIN}', U_AVG_PRICE = '{avgPrice}', U_ABS_NUMBER = N'{absNumber}' WHERE U_S_DATE BETWEEN '{sDate:s}' AND '{eDate:s}' AND U_ABS_NUMBER = N'{absNumber}'"));
+                    recSet.MoveNext();
                 }
             }
 

@@ -25,9 +25,9 @@ namespace GeorgianPetroleum.Forms
         /// </summary>
         public override void OnInitializeComponent()
         {
-            this.Button0 = ((SAPbouiCOM.Button)(this.GetItem("1").Specific));
-            this.Button0.PressedBefore += new SAPbouiCOM._IButtonEvents_PressedBeforeEventHandler(this.Button0_PressedBefore);
-            this.OnCustomInitialize();
+            Button0 = ((Button)(GetItem("1").Specific));
+            Button0.PressedBefore += new _IButtonEvents_PressedBeforeEventHandler(Button0_PressedBefore);
+            OnCustomInitialize();
 
         }
 
@@ -36,11 +36,11 @@ namespace GeorgianPetroleum.Forms
         /// </summary>
         public override void OnInitializeFormEvents()
         {
-            this.DataAddAfter += new DataAddAfterHandler(this.Form_DataAddAfter);
+            DataAddAfter += new DataAddAfterHandler(Form_DataAddAfter);
 
         }
 
-        private SAPbouiCOM.Button Button0;
+        private Button Button0;
 
 
 
@@ -49,13 +49,13 @@ namespace GeorgianPetroleum.Forms
 
         }
 
-        private void Button0_PressedBefore(object sboObject, SAPbouiCOM.SBOItemEventArg pVal, out bool BubbleEvent)
+        private void Button0_PressedBefore(object sboObject, SBOItemEventArg pVal, out bool BubbleEvent)
         {
             BubbleEvent = true;
-            var blanketAgreementNumber = ((EditText)(SAPbouiCOM.Framework.Application.SBO_Application.Forms.ActiveForm.Items.Item("1980002192")
+            var blanketAgreementNumber = ((EditText)(Application.SBO_Application.Forms.ActiveForm.Items.Item("1980002192")
                 .Specific)).Value;
 
-            var postingDateString = ((EditText)(SAPbouiCOM.Framework.Application.SBO_Application.Forms.ActiveForm.Items.Item("10")
+            var postingDateString = ((EditText)(Application.SBO_Application.Forms.ActiveForm.Items.Item("10")
                 .Specific)).Value;
 
             Recordset recSet =
@@ -84,48 +84,99 @@ namespace GeorgianPetroleum.Forms
                 profitMargin = decimal.Parse(DiManager.Recordset.Fields.Item("U_PROFIT_MARGIN").Value.ToString());
             }
 
-            Matrix invoiceMatrix = (Matrix)SAPbouiCOM.Framework.Application.SBO_Application.Forms.ActiveForm.Items.Item("38").Specific;
+            Matrix invoiceMatrix = (Matrix)Application.SBO_Application.Forms.ActiveForm.Items.Item("38").Specific;
 
             for (int i = 1; i < invoiceMatrix.RowCount; i++)
             {
-                SAPbouiCOM.EditText NetPrice = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("14").Cells.Item(i).Specific;
-                SAPbouiCOM.EditText GrossPrice = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("234000377").Cells.Item(i).Specific;
-                SAPbouiCOM.EditText SubContractorCode = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("U_ContractorCode").Cells.Item(i).Specific;
-                SAPbouiCOM.EditText SubContractorName = (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("U_Qcontractor").Cells.Item(i).Specific;
+                EditText NetPrice = (EditText)invoiceMatrix.Columns.Item("14").Cells.Item(i).Specific;
+                EditText GrossPrice = (EditText)invoiceMatrix.Columns.Item("234000377").Cells.Item(i).Specific;
+                EditText GrossPriceAfterDisc = (EditText)invoiceMatrix.Columns.Item("20").Cells.Item(i).Specific;
+                EditText SubContractorCode = (EditText)invoiceMatrix.Columns.Item("U_ContractorCode").Cells.Item(i).Specific;
+                EditText SubContractorName = (EditText)invoiceMatrix.Columns.Item("U_Qcontractor").Cells.Item(i).Specific;
 
                 SubContractorCode.Value = subContractorCode;
                 SubContractorName.Value = subContractorName;
 
                 try
                 {
-                    GrossPrice.Value = (avgPrice + profitMargin).ToString(CultureInfo.InvariantCulture);
+                    GrossPriceAfterDisc.Value = ((avgPrice + profitMargin) / 1000).ToString(CultureInfo.InvariantCulture);
                 }
                 catch (Exception e)
                 {
-                    NetPrice.Value = ((avgPrice + profitMargin) / 1.18m).ToString(CultureInfo.InvariantCulture);
+                    NetPrice.Value = (Math.Round((avgPrice + profitMargin) / 1.18m)/1000).ToString(CultureInfo.InvariantCulture);
                 }
             }
         }
 
+        public static Action refresWaybill;
+
         private void Form_DataAddAfter(ref BusinessObjectInfo pVal)
         {
-            var wbId = SAPbouiCOM.Framework.Application.SBO_Application.Forms.ActiveForm.DataSources.UserDataSources.Item("wbid")
+            if (!pVal.ActionSuccess)
+            {
+                return;
+            }
+
+            var wbId = Application.SBO_Application.Forms.ActiveForm.DataSources.UserDataSources.Item("wbid")
                 .Value;
 
-            Matrix invoiceMatrix = (Matrix)SAPbouiCOM.Framework.Application.SBO_Application.Forms.ActiveForm.Items.Item("38").Specific;
+            int docEntry = 0;
+            try
+            {
+                string xmlObjectKey = pVal.ObjectKey;
+                XElement xmlnew = XElement.Parse(xmlObjectKey);
+                XElement xElementx = xmlnew.Element("DocEntry");
+                if (xElementx != null)
+                {
+                    docEntry = int.Parse(xElementx.Value);
+                }
+
+                Recordset recSet =
+                    (Recordset)DiManager.Company.GetBusinessObject(BoObjectTypes
+                        .BoRecordset);
+                recSet.DoQuery(DiManager.QueryHanaTransalte($"UPDATE [@RSM_WBAR] SET U_INVOICE_DOCENTRY = N'{docEntry}' WHERE U_ID = N'{wbId}'"));
+
+                refresWaybill.Invoke();
+
+            }
+            catch (Exception e)
+            {
+                // ignored
+            }
+
+            
+
+            if (string.IsNullOrWhiteSpace(wbId))
+            {
+                return;
+            }
+
+            Matrix invoiceMatrix = (Matrix)Application.SBO_Application.Forms.ActiveForm.Items.Item("38").Specific;
             var model = DiManager.RsClient.GetWaybillModelFromId(wbId);
 
 
-            SAPbouiCOM.EditText NetPrice =
-                (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("14").Cells.Item(1).Specific;
-            SAPbouiCOM.EditText GrossPrice =
-                (SAPbouiCOM.EditText)invoiceMatrix.Columns.Item("234000377").Cells.Item(1).Specific;
+            EditText netPrice =
+                (EditText)invoiceMatrix.Columns.Item("14").Cells.Item(1).Specific;
+            EditText grossPrice =
+                (EditText)invoiceMatrix.Columns.Item("234000377").Cells.Item(1).Specific;
+            EditText grossPriceAfterDisc = (EditText)invoiceMatrix.Columns.Item("20").Cells.Item(1).Specific;
+            EditText grossTotal;
+            try 
+            {
+                 grossTotal = (EditText)invoiceMatrix.Columns.Item("284").Cells.Item(1).Specific;
+            }
+            catch (Exception e)
+            {
+                Application.SBO_Application.SetStatusBarMessage("Gross Total (Doc) - გამოაჩინეთ Form Settings -დან",
+                    BoMessageTime.bmt_Short, true);
+                return;
+            }
 
 
             foreach (GOOD good in model.GOODS_LIST)
             {
-                var currency = GrossPrice.Value.Split(' ')[1];
-                SAPbouiCOM.EditText postingDateString =
+                var currency = grossPriceAfterDisc.Value.Split(' ')[1];
+                EditText postingDateString =
                     (EditText) Application.SBO_Application.Forms.ActiveForm.Items.Item("10").Specific;
                 DateTime postingDate = DateTime.ParseExact(postingDateString.Value, "yyyyMMdd",
                     CultureInfo.InvariantCulture);
@@ -133,17 +184,21 @@ namespace GeorgianPetroleum.Forms
 
                 if (currency == "GEL")
                 {
-                    good.PRICE = GrossPrice.Value.Split(' ')[0];
-                    good.AMOUNT =
-                        (double.Parse(GrossPrice.Value.Split(' ')[0]) * double.Parse(good.QUANTITY)).ToString(CultureInfo
+                    good.PRICE = grossPriceAfterDisc.Value.Split(' ')[0];
+                    good.AMOUNT = 
+                        (double.Parse(grossTotal.Value.Split(' ')[0], CultureInfo.InvariantCulture) * double.Parse(good.QUANTITY, CultureInfo.InvariantCulture)).ToString(CultureInfo
                             .InvariantCulture);
+                    //good.AMOUNT =
+                    //    (double.Parse(grossPriceAfterDisc.Value.Split(' ')[0], CultureInfo.InvariantCulture) * double.Parse(good.QUANTITY, CultureInfo.InvariantCulture)).ToString(CultureInfo
+                    //        .InvariantCulture);
                 }
                 else
                 {
                     good.PRICE =
-                        (double.Parse(GrossPrice.Value.Split(' ')[0]) * rate).ToString(CultureInfo.InvariantCulture);
-                    good.AMOUNT = (double.Parse(GrossPrice.Value.Split(' ')[0]) * rate * double.Parse(good.QUANTITY))
-                        .ToString(CultureInfo.InvariantCulture);
+                        (double.Parse(grossPriceAfterDisc.Value.Split(' ')[0], CultureInfo.InvariantCulture) * rate).ToString(CultureInfo.InvariantCulture);
+                    good.AMOUNT = (double.Parse(grossTotal.Value.Split(' ')[0], CultureInfo.InvariantCulture) * rate * double.Parse(good.QUANTITY, CultureInfo.InvariantCulture)).ToString(CultureInfo.InvariantCulture);
+                    //good.AMOUNT = (double.Parse(grossPriceAfterDisc.Value.Split(' ')[0], CultureInfo.InvariantCulture) * rate * double.Parse(good.QUANTITY, CultureInfo.InvariantCulture))
+                    //    .ToString(CultureInfo.InvariantCulture);
                 }
             }
 
@@ -157,9 +212,9 @@ namespace GeorgianPetroleum.Forms
                 {
                     var errors = DiManager.RsClient.GetErrorCodes();
                     var errorNode = errors.XPathSelectElement($"./ERROR_CODE[ID = {result}]");
-                    var error = errorNode.Element("TEXT").Value;
+                    var error = errorNode?.Element("TEXT")?.Value;
                     Application.SBO_Application.SetStatusBarMessage(error,
-                        BoMessageTime.bmt_Short, true);
+                        BoMessageTime.bmt_Short);
                 }
             }
         }

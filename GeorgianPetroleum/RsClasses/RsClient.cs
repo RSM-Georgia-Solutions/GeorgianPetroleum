@@ -152,7 +152,7 @@ namespace GeorgianPetroleum
             {
                 s_dt = DateTime.ParseExact(StartDate, "yyyyMMdd", CultureInfo.InvariantCulture);
                 e_dt = DateTime.ParseExact(EndDate, "yyyyMMdd", CultureInfo.InvariantCulture);
-                e_dt.AddDays(1);
+                e_dt = e_dt.AddDays(1).AddMinutes(-1);
             }
             catch (Exception e)
             {
@@ -175,15 +175,15 @@ namespace GeorgianPetroleum
 
                 for (int i = 0; i < divisor; i++)
                 {
-                    wayBilsRequests.Add(new WayBilsRequest(s_dt.AddDays(i * 3), s_dt.AddDays((i + 1) * 3), WbTypes));
+                    wayBilsRequests.Add(new WayBilsRequest(s_dt.AddDays(i * 3), s_dt.AddDays((i + 1) * 3), WbTypes, "0,1,2"));
                 }
 
 
-                wayBilsRequests.Add(new WayBilsRequest(s_dt.AddDays(divisor * 3), s_dt.AddDays(divisor * 3 + extraDays), WbTypes));
+                wayBilsRequests.Add(new WayBilsRequest(s_dt.AddDays(divisor * 3), s_dt.AddDays(divisor * 3 + extraDays), WbTypes, "0,1,2"));
             }
             else
             {
-                wayBilsRequests.Add(new WayBilsRequest(s_dt, e_dt, WbTypes));
+                wayBilsRequests.Add(new WayBilsRequest(s_dt, e_dt, WbTypes, "0,1,2"));
             }
 
 
