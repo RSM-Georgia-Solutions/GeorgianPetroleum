@@ -60,7 +60,7 @@ namespace GeorgianPetroleum.Forms
                 U_START_ADDRESS as [დაწყების ადგილი],
                 U_END_ADDRESS as [დასრულების ადგილი],
                 U_DRIVER_TIN as [მძღოლის პ / ნ], U_DRIVER_NAME as [მძღოლის სახელი], 
-                U_CAR_NUMBER as [ა / მ ნომერი] FROM[@RSM_WBAR]";
+                U_CAR_NUMBER as [ა / მ ნომერი] FROM [@RSM_WBAR]";
             Grid0.DataTable.ExecuteQuery(query);
         }
 

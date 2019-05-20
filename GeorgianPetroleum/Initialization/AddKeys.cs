@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SAPbobsCOM;
 using SAPbouiCOM;
 using Application = SAPbouiCOM.Framework.Application;
+using GeorgianPetroleum.Initialization;
 
 namespace GeorgianPetroleum.Initialization
 {

@@ -160,6 +160,7 @@ namespace GeorgianPetroleum.Forms
             EditText grossPrice =
                 (EditText)invoiceMatrix.Columns.Item("234000377").Cells.Item(1).Specific;
             EditText grossPriceAfterDisc = (EditText)invoiceMatrix.Columns.Item("20").Cells.Item(1).Specific;
+            EditText quantity = (EditText)invoiceMatrix.Columns.Item("11").Cells.Item(1).Specific;
             EditText grossTotal;
             try 
             {
@@ -185,13 +186,15 @@ namespace GeorgianPetroleum.Forms
                 if (currency == "GEL")
                 {
                     good.PRICE = grossPriceAfterDisc.Value.Split(' ')[0];
-                    good.AMOUNT = (double.Parse(grossTotal.Value.Split(' ')[0], CultureInfo.InvariantCulture).ToString());         
+                    good.QUANTITY = quantity.Value.ToString(CultureInfo.InvariantCulture);
+                    good.AMOUNT = (double.Parse(grossTotal.Value.Split(' ')[0], CultureInfo.InvariantCulture).ToString());
                 }
                 else
                 {
                     good.PRICE =
                         (double.Parse(grossPriceAfterDisc.Value.Split(' ')[0], CultureInfo.InvariantCulture) * rate).ToString(CultureInfo.InvariantCulture);
-                    good.AMOUNT = (double.Parse(grossTotal.Value.Split(' ')[0], CultureInfo.InvariantCulture) * rate).ToString(CultureInfo.InvariantCulture);                     
+                    good.AMOUNT = (double.Parse(grossTotal.Value.Split(' ')[0], CultureInfo.InvariantCulture) * rate).ToString(CultureInfo.InvariantCulture);
+                    good.QUANTITY = quantity.Value.ToString(CultureInfo.InvariantCulture);
                 }
             }
 

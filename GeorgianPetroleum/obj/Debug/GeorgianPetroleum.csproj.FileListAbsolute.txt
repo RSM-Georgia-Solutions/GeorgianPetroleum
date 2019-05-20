@@ -1,3 +1,10 @@
+C:\Users\Administrator\Source\Repos\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\GeorgianPetroleum.exe.config
+C:\Users\Administrator\Source\Repos\GeorgianPetroleum\GeorgianPetroleum\obj\Debug\GeorgianPetroleum.exe
+C:\Users\Administrator\Source\Repos\GeorgianPetroleum\GeorgianPetroleum\obj\Debug\GeorgianPetroleum.pdb
+C:\Users\Administrator\Source\Repos\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\GeorgianPetroleum.exe
+C:\Users\Administrator\Source\Repos\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\GeorgianPetroleum.pdb
+C:\Users\Administrator\Source\Repos\GeorgianPetroleum\GeorgianPetroleum\obj\Debug\GeorgianPetroleum.csprojResolveAssemblyReference.cache
+D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\obj\Debug\GeorgianPetroleum.csprojResolveAssemblyReference.cache
 D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\GeorgianPetroleum.exe.config
 D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\GeorgianPetroleum.exe
 D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\GeorgianPetroleum.pdb
@@ -7,10 +14,3 @@ D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\Georg
 D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\SAPBusinessOneSDK.dll
 D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\obj\Debug\GeorgianPetroleum.exe
 D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\obj\Debug\GeorgianPetroleum.pdb
-D:\Users\nkurdadze\Documents\Visual Studio 2015\Projects\GeorgianPetroleum\GeorgianPetroleum\obj\Debug\GeorgianPetroleum.csprojResolveAssemblyReference.cache
-C:\Users\Administrator\Source\Repos\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\GeorgianPetroleum.exe.config
-C:\Users\Administrator\Source\Repos\GeorgianPetroleum\GeorgianPetroleum\obj\Debug\GeorgianPetroleum.exe
-C:\Users\Administrator\Source\Repos\GeorgianPetroleum\GeorgianPetroleum\obj\Debug\GeorgianPetroleum.pdb
-C:\Users\Administrator\Source\Repos\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\GeorgianPetroleum.exe
-C:\Users\Administrator\Source\Repos\GeorgianPetroleum\GeorgianPetroleum\bin\Debug\GeorgianPetroleum.pdb
-C:\Users\Administrator\Source\Repos\GeorgianPetroleum\GeorgianPetroleum\obj\Debug\GeorgianPetroleum.csprojResolveAssemblyReference.cache
