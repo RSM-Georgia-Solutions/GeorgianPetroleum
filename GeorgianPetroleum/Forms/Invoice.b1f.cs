@@ -55,6 +55,11 @@ namespace GeorgianPetroleum.Forms
             var blanketAgreementNumber = ((EditText)(Application.SBO_Application.Forms.ActiveForm.Items.Item("1980002192")
                 .Specific)).Value;
 
+            if (string.IsNullOrWhiteSpace(blanketAgreementNumber))
+            {
+                return;
+            } 
+
             var postingDateString = ((EditText)(Application.SBO_Application.Forms.ActiveForm.Items.Item("10")
                 .Specific)).Value;
 
@@ -77,6 +82,7 @@ namespace GeorgianPetroleum.Forms
             {
                 Application.SBO_Application.SetStatusBarMessage("საშუალო ფასი ვერ მოიძებნა",
                     BoMessageTime.bmt_Short, true);
+                return;
             }
             else
             {
@@ -119,6 +125,13 @@ namespace GeorgianPetroleum.Forms
 
             var wbId = Application.SBO_Application.Forms.ActiveForm.DataSources.UserDataSources.Item("wbid")
                 .Value;
+ 
+
+
+            if (string.IsNullOrWhiteSpace(wbId))
+            {
+                return;
+            }
 
             int docEntry = 0;
             try
@@ -144,12 +157,18 @@ namespace GeorgianPetroleum.Forms
                 // ignored
             }
 
-            
 
-            if (string.IsNullOrWhiteSpace(wbId))
+
+            Documents invoice = (Documents)DiManager.Company.GetBusinessObject(BoObjectTypes.oInvoices);
+            if (!invoice.GetByKey(docEntry))
             {
                 return;
             }
+
+            if (invoice.CancelStatus == CancelStatusEnum.csCancellation)
+            {
+                return;
+            }  
 
             Matrix invoiceMatrix = (Matrix)Application.SBO_Application.Forms.ActiveForm.Items.Item("38").Specific;
             var model = DiManager.RsClient.GetWaybillModelFromId(wbId);

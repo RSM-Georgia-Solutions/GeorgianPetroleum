@@ -77,7 +77,8 @@ namespace GeorgianPetroleum.Forms
                 DateTime sDate = DateTime.ParseExact(startDateString, "yyyyMMdd", CultureInfo.InvariantCulture);
                 DateTime eDate = DateTime.ParseExact(endDateString, "yyyyMMdd", CultureInfo.InvariantCulture);
                 Grid0.DataTable.ExecuteQuery(DiManager.QueryHanaTransalte($"SELECT OOAT.Number as [ხელშეკრულების ნომერი], OOAT.U_ProfitMArgin as [მარჟა], U_S_DATE as [დაწყების თარიღი], U_E_DATE as [დასრულების თარიღი],     U_AVG_PRICE as [საშუალო ფასი] FROM OOAT left join (select * from [@RSM_PRCE] WHERE U_S_DATE BETWEEN '{sDate:s}' AND '{eDate:s}') [@RSM_PRCE] on OOAT.Number = [@RSM_PRCE].U_ABS_NUMBER  where OOAT.Cancelled = 'N' AND OOAT.BpType = 'C' AND OOAT.[Status] = 'A' AND ( (OOAT.StartDate <= '{eDate:s}') AND (OOAT.EndDate >= '{sDate:s}'))  order by U_S_DATE desc"));
-                EditText3.Value = Grid0.DataTable.GetValue("საშუალო ფასი", 0).ToString();
+               var avPrc =  Convert.ToDecimal(Grid0.DataTable.GetValue("საშუალო ფასი", 0)) ;
+                EditText3.Value = avPrc.ToString(CultureInfo.InvariantCulture);
                 //WHERE U_S_DATE BETWEEN '{sDate:s}' AND '{eDate:s}'
             }
 
