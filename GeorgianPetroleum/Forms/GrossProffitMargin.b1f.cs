@@ -85,6 +85,9 @@ namespace GeorgianPetroleum.Forms
 
         private void OnCustomInitialize()
         {
+            StaticText0.Item.FontSize = 11;
+            StaticText1.Item.FontSize = 11;
+            StaticText2.Item.FontSize = 11;
             Button0.Item.FontSize = 24;
             EditText1.Value = DateTime.Now.ToString("yyyyMMdd");
             EditText0.Value = DateTime.Now.ToString("yyyyMMdd");
