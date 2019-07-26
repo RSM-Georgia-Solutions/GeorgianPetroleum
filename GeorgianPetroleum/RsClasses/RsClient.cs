@@ -97,7 +97,7 @@ namespace GeorgianPetroleum
             ProgressBar progressBar = null;
             try
             {
-                 progressBar = SAPbouiCOM.Framework.Application.SBO_Application.StatusBar.CreateProgressBar("ზედნადებები იტვირთება", waybillIds.Count, true);
+                progressBar = SAPbouiCOM.Framework.Application.SBO_Application.StatusBar.CreateProgressBar("ზედნადებები იტვირთება", waybillIds.Count, true);
             }
             catch (Exception)
             {
@@ -120,9 +120,9 @@ namespace GeorgianPetroleum
             progressBar?.Stop();
         }
 
-       
 
-        public  WaybillModel GetWaybillModelFromId(string wbId)
+
+        public WaybillModel GetWaybillModelFromId(string wbId)
         {
             XElement sentWaybillsXml = GetWaybill(wbId);
             IEnumerable<XElement> elements = sentWaybillsXml.Elements();
@@ -152,6 +152,7 @@ namespace GeorgianPetroleum
 
         public List<WayBilsRequest> GetRequest(string StartDate, string EndDate, string WbTypes = "")
         {
+            var x = GetWaybillTypes();
             DateTime now = DateTime.Now;
             DateTime s_dt;
             DateTime e_dt;
@@ -182,15 +183,15 @@ namespace GeorgianPetroleum
 
                 for (int i = 0; i < divisor; i++)
                 {
-                    wayBilsRequests.Add(new WayBilsRequest(s_dt.AddDays(i * 3), s_dt.AddDays((i + 1) * 3), WbTypes, "0,1,2"));
+                    wayBilsRequests.Add(new WayBilsRequest(s_dt.AddDays(i * 3), s_dt.AddDays((i + 1) * 3), WbTypes, "0,1,2,8"));
                 }
 
 
-                wayBilsRequests.Add(new WayBilsRequest(s_dt.AddDays(divisor * 3), s_dt.AddDays(divisor * 3 + extraDays), WbTypes, "0,1,2"));
+                wayBilsRequests.Add(new WayBilsRequest(s_dt.AddDays(divisor * 3), s_dt.AddDays(divisor * 3 + extraDays), WbTypes, "0,1,2,8"));
             }
             else
             {
-                wayBilsRequests.Add(new WayBilsRequest(s_dt, e_dt, WbTypes, "0,1,2"));
+                wayBilsRequests.Add(new WayBilsRequest(s_dt, e_dt, WbTypes, "0,1,2,8"));
             }
 
 
@@ -215,9 +216,14 @@ namespace GeorgianPetroleum
             return errCodes;
         }
 
+        public XElement GetWaybillTypes()
+        {
+            return _client.get_waybill_types(ServiceUser, ServiceUserPassword);
+        }
+
         public XElement GetWaybill(string waybillId)
         {
-           return  _client.get_waybill(ServiceUser, ServiceUserPassword, int.Parse(waybillId));
-        }
+            return _client.get_waybill(ServiceUser, ServiceUserPassword, int.Parse(waybillId));
+        } 
     }
 }

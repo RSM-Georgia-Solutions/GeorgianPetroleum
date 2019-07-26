@@ -52,6 +52,7 @@ namespace GeorgianPetroleum.Forms
         private void Button0_PressedBefore(object sboObject, SBOItemEventArg pVal, out bool BubbleEvent)
         {
             BubbleEvent = true;
+      
             var blanketAgreementNumber = ((EditText)(Application.SBO_Application.Forms.ActiveForm.Items.Item("1980002192")
                 .Specific)).Value;
 
@@ -100,8 +101,16 @@ namespace GeorgianPetroleum.Forms
                 EditText SubContractorCode = (EditText)invoiceMatrix.Columns.Item("U_ContractorCode").Cells.Item(i).Specific;
                 EditText SubContractorName = (EditText)invoiceMatrix.Columns.Item("U_Qcontractor").Cells.Item(i).Specific;
 
-                SubContractorCode.Value = subContractorCode;
-                SubContractorName.Value = subContractorName;
+                try
+                {
+                    SubContractorCode.Value = subContractorCode;
+                    SubContractorName.Value = subContractorName;
+                }
+                catch (Exception)
+                {
+
+                    
+                }
 
                 try
                 {

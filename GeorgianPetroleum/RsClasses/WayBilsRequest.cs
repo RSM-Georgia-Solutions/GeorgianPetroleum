@@ -27,7 +27,7 @@ namespace GeorgianPetroleum.RsClasses
         public string sUserIds;
         public string comment;
 
-        public WayBilsRequest(DateTime? start, DateTime? end, string iTypes, string statusesr)
+        public WayBilsRequest(DateTime? start, DateTime? end, string iTypes, string statusesr = null)
         {
             beginDateS = start;
             beginDateE = end;
