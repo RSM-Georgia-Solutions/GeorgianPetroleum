@@ -118,7 +118,14 @@ namespace GeorgianPetroleum.Forms
                 }
                 catch (Exception e)
                 {
-                    NetPrice.Value = (Math.Round((avgPrice + profitMargin) / 1.18m)/1000).ToString(CultureInfo.InvariantCulture);
+                    try
+                    {
+                        NetPrice.Value = (Math.Round((avgPrice + profitMargin) / 1.18m) / 1000).ToString(CultureInfo.InvariantCulture);
+                    }
+                    catch (Exception e2)
+                    {
+
+                    }
                 }
             }
         }
