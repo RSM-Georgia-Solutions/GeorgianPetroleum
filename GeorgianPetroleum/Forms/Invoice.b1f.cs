@@ -53,7 +53,7 @@ namespace GeorgianPetroleum.Forms
         {
             BubbleEvent = true;
       
-            var blanketAgreementNumber = ((EditText)(Application.SBO_Application.Forms.ActiveForm.Items.Item("1980002192")
+            var blanketAgreementNumber = ((EditText)(UIAPIRawForm.Items.Item("1980002192")
                 .Specific)).Value;
 
             if (string.IsNullOrWhiteSpace(blanketAgreementNumber))
@@ -61,7 +61,7 @@ namespace GeorgianPetroleum.Forms
                 return;
             } 
 
-            var postingDateString = ((EditText)(Application.SBO_Application.Forms.ActiveForm.Items.Item("10")
+            var postingDateString = ((EditText)(UIAPIRawForm.Items.Item("10")
                 .Specific)).Value;
 
             Recordset recSet =
@@ -91,7 +91,7 @@ namespace GeorgianPetroleum.Forms
                 profitMargin = decimal.Parse(DiManager.Recordset.Fields.Item("U_PROFIT_MARGIN").Value.ToString());
             }
 
-            Matrix invoiceMatrix = (Matrix)Application.SBO_Application.Forms.ActiveForm.Items.Item("38").Specific;
+            Matrix invoiceMatrix = (Matrix)UIAPIRawForm.Items.Item("38").Specific;
 
             for (int i = 1; i < invoiceMatrix.RowCount; i++)
             {
@@ -139,7 +139,7 @@ namespace GeorgianPetroleum.Forms
                 return;
             }
 
-            var wbId = Application.SBO_Application.Forms.ActiveForm.DataSources.UserDataSources.Item("wbid")
+            var wbId = UIAPIRawForm.DataSources.UserDataSources.Item("wbid")
                 .Value;
  
 
@@ -186,7 +186,7 @@ namespace GeorgianPetroleum.Forms
                 return;
             }  
 
-            Matrix invoiceMatrix = (Matrix)Application.SBO_Application.Forms.ActiveForm.Items.Item("38").Specific;
+            Matrix invoiceMatrix = (Matrix)UIAPIRawForm.Items.Item("38").Specific;
             var model = DiManager.RsClient.GetWaybillModelFromId(wbId);
 
 
@@ -213,7 +213,7 @@ namespace GeorgianPetroleum.Forms
             {
                 var currency = grossPriceAfterDisc.Value.Split(' ')[1];
                 EditText postingDateString =
-                    (EditText) Application.SBO_Application.Forms.ActiveForm.Items.Item("10").Specific;
+                    (EditText)UIAPIRawForm.Items.Item("10").Specific;
                 DateTime postingDate = DateTime.ParseExact(postingDateString.Value, "yyyyMMdd",
                     CultureInfo.InvariantCulture);
                 var rate = DiManager.GetCurrencyRate(currency, postingDate, DiManager.Company);
